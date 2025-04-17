@@ -5,11 +5,16 @@ export class Notificacion {
     #leida
     #fechaLeida
 
-    constructor(mensaje, usuario, fechaAlta, leida, fechaLeida) {
+    constructor(mensaje, usuario, fechaAlta) {
         this.#mensaje = mensaje
         this.#usuario = usuario
         this.#fechaAlta = fechaAlta
-        this.#leida = leida
-        this.#fechaLeida = fechaLeida
+        this.#leida = false
     }
+
+    marcarComoLeida() {
+        this.#leida = true
+        this.#fechaLeida = new Date()
+    }
+
 }

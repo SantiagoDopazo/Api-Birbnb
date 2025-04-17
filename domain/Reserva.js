@@ -16,4 +16,22 @@ export class Reserva {
         this.#estado = estado
         this.#precioPorNoche = precioPorNoche
     }
+
+    get huespedReservador() {
+        return this.#huespedReservador
+    }
+
+    get fechaAlta() {
+        return this.#fechaAlta
+    }
+
+    get rangoFechas() {
+        return this.#rangoFechas;
+    }
+    
+
+    actualizarEstado(estadoReserva)
+    {
+        this.#estado = estadoReserva
+    }
 }
