@@ -26,6 +26,10 @@ export class Alojamiento {
         this.#cantHuespedesMax = cantHuespedesMax
     }
 
+    get anfitrion() {
+        return this.#anfitrion
+    }
+
     agregarCaracteristica(carac) {
         this.#caracteristicas.push(carac)
     }
