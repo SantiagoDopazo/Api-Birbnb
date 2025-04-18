@@ -4,6 +4,8 @@
 Proyecto integrador para la materia **Diseño de Sistemas** en la UTN FRBA (1C 2025).  
 Birbnb es una plataforma de reservas de alojamientos no convencionales, como departamentos, cabañas y casas particulares, diseñada para facilitar la conexión entre anfitriones y huéspedes de manera sencilla, intuitiva y segura.
 
+## WorkFlow
+
 ### Convenciones para el nombre de ramas:
 
 * Si el cambio es una feature -> TICKET-ID-feat-name-of-the-branch
