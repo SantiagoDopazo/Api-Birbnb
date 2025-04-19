@@ -12,6 +12,14 @@ export class Notificacion {
         this.#leida = false
     }
 
+    get leida() {
+        return this.#leida
+    }
+
+    get fechaLeida() {
+        return this.#fechaLeida
+    }
+
     marcarComoLeida() {
         this.#leida = true
         this.#fechaLeida = new Date()

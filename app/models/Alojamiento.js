@@ -1,4 +1,4 @@
-import { RangoFechas } from "./domain/RangoFechas.js"
+import { RangoFechas } from "./RangoFechas.js"
 
 export class Alojamiento {
     #anfitrion
