@@ -10,6 +10,7 @@ import { Pais } from './app/models/Pais.js';
 import { RangoFechas } from './app/models/RangoFechas.js'
 import { Usuario } from './app/models/Usuario.js'
 import { Reserva } from './app/models/Reserva.js'
+import { EstadoPendiente, EstadoCancelada, EstadoConfirmada } from './app/models/EstadoReserva.js';
 
 const pais = new Pais('Argentina');
 const ciudad = new Ciudad('Buenos Aires', pais);
@@ -20,7 +21,10 @@ const alojamiento = new Alojamiento(juan, 'Casa', 'Linda casa con patio', 150, '
 const fechas = new RangoFechas(new Date(2025, 4, 1), new Date(2025, 4, 5));
 const fechasSuperpuestas = new RangoFechas(new Date(2025, 3, 29), new Date(2025, 4, 2));
 const fechasNoSuperpuestas = new RangoFechas(new Date(2025, 3, 20), new Date(2025, 3, 29));
-const reserva = new Reserva(new Date(), axel, 2, 'Casa', fechas, 150);
+const estadoPendiente = new EstadoPendiente()
+const estadoConfirmada = new EstadoConfirmada()
+const estadoCancelada = new EstadoCancelada()
+const reserva = new Reserva(new Date(), axel, 2, 'Casa', fechas, 150, estadoPendiente);
 
 console.log('Prueba Alojamiento:');
 alojamiento.agregarCaracteristica('WiFi');
@@ -34,7 +38,7 @@ console.log('- ¿Pueden alojarse 3?', alojamiento.puedenAlojarse(3));
 
 console.log('\nPrueba Reserva:');
 console.log('- Estado inicial:', reserva.estado);
-reserva.actualizarEstado('CONFIRMADA');
+reserva.actualizarEstado(estadoConfirmada);
 console.log('- Estado actualizado:', reserva.estado);
 reserva.motivoCancelacion = 'Cambio de planes';
 console.log('- Motivo cancelación:', reserva.motivoCancelacion);
@@ -48,9 +52,11 @@ console.log('En fecha: ', notificacion.fechaLeida?.toLocaleString('es-AR', {time
 
 console.log('\nPrueba FactoryNotificacion:');
 const factory = new FactoryNotificacion();
-const reserva2 = new Reserva(new Date(), axel, 1, alojamiento, fechas, 200);
+const reserva2 = new Reserva(new Date(), axel, 1, alojamiento, fechas, 200, estadoPendiente);
 console.log('- Notificación generada:', factory.crearSegunReserva(reserva2));
 
 console.log('\nInstanciación de otras clases sin errores:');
-new CambioEstadoReserva(new Date(), 'PENDIENTE', reserva, 'Motivo', axel);
+new CambioEstadoReserva(new Date(), estadoPendiente, reserva, 'motivo',axel);
 new Foto('Descripción', '/foto.png');
+console.log('- Estado actualizado:', reserva.estado);
+console.log('- Motivo cancelación:', reserva.motivoCancelacion);

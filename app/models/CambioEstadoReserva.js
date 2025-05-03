@@ -11,5 +11,9 @@ export class CambioEstadoReserva {
         this.#reserva = reserva
         this.#motivo = motivo
         this.#usuario = usuario
+
+        this.#reserva.actualizarEstado(this.#estado)
+        this.#reserva.motivoCancelacion = motivo
+
     }
 }
