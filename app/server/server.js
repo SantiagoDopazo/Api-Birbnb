@@ -1,12 +1,13 @@
 import express from 'express';
-import { healthCheckRoutes } from './app/routes/healthCheckRoutes.js';
+import { configureRoutes } from "../routes/routes.js"
+import { errorHandler } from "../middlewares/errorHandler.js";
 
 export class Server {
     #controllers = {};
     #app;
 
     constructor(app, port = 3000) {
-        this.#app = express();
+        this.#app = app;
         this.port = port;
         this.#app.use(express.json());
     }
@@ -28,12 +29,21 @@ export class Server {
     }
 
     configureRoutes() {
-        healthCheckRoutes(this.app, this.getController.bind(this));
+        configureRoutes(this.app, this.getController.bind(this));
+        
+        this.#app.use((req, res, next) => {
+        res.status(404).json({
+            status: 'fail',
+            message: "La ruta solicitada no existe"
+        });
+        });
+
+        this.#app.use(errorHandler);
     }
 
-    launch() {
-        this.app.listen(this.port, () => {
-            console.log(`Server running on: http://localhost:${this.port}`);
-        });
-    }
+  launch() {
+    this.app.listen(this.port, () => {
+      console.log("Server running on port " + this.port);
+    });
+  }
 }

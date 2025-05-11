@@ -1,16 +1,16 @@
 
-import { Alojamiento } from './app/models/Alojamiento.js';
-import { CambioEstadoReserva } from './app/models/CambioEstadoReserva.js';
-import { Ciudad } from './app/models/Ciudad.js';
-import { Direccion } from './app/models/Direccion.js';
-import { FactoryNotificacion } from './app/models/FactoryNotificacion.js';
-import { Foto } from './app/models/Foto.js';
-import { Notificacion } from './app/models/Notificacion.js';
-import { Pais } from './app/models/Pais.js';
-import { RangoFechas } from './app/models/RangoFechas.js'
-import { Usuario } from './app/models/Usuario.js'
-import { Reserva } from './app/models/Reserva.js'
-import { EstadoPendiente, EstadoCancelada, EstadoConfirmada } from './app/models/EstadoReserva.js';
+import { Alojamiento } from './app/models/entities/Alojamiento.js';
+import { CambioEstadoReserva } from './app/models/entities/CambioEstadoReserva.js';
+import { Ciudad } from './app/models/entities/Ciudad.js';
+import { Direccion } from './app/models/entities/Direccion.js';
+import { FactoryNotificacion } from './app/models/entities/FactoryNotificacion.js';
+import { Foto } from './app/models/entities/Foto.js';
+import { Notificacion } from './app/models/entities/Notificacion.js';
+import { Pais } from './app/models/entities/Pais.js';
+import { RangoFechas } from './app/models/entities/RangoFechas.js'
+import { Usuario } from './app/models/entities/Usuario.js'
+import { Reserva } from './app/models/entities/Reserva.js'
+import { EstadoPendiente, EstadoCancelada, EstadoConfirmada } from './app/models/entities/EstadoReserva.js';
 
 const pais = new Pais('Argentina');
 const ciudad = new Ciudad('Buenos Aires', pais);
