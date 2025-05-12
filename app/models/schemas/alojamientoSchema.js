@@ -25,20 +25,20 @@ const alojamientoSchema = new mongoose.Schema({
     },
     caracteristicas: {
         type: [String]
+    },
+    
+    direccion: {
+        calle: { type: String, required: true, trim: true },
+        altura: { type: Number, required: true, min: 0 },
+        ciudad: {
+            nombre: { type: String, required: true },
+            pais: {
+                nombre: { type: String, required: true }
+            }
+        },
+        lat: { type: Number, required: true },
+        long: { type: Number, required: true }
     }
-    // },
-    // direccion: {
-    //     calle: { type: String, required: true, trim: true },
-    //     altura: { type: Number, required: true, min: 0 },
-    //     ciudad: {
-    //         nombre: { type: String, required: true },
-    //         pais: {
-    //             nombre: { type: String, required: true }
-    //         }
-    //     },
-    //     lat: { type: Number, required: true },
-    //     long: { type: Number, required: true }
-    // }
 }, {
     timestamps: true
 });

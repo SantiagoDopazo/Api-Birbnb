@@ -30,6 +30,23 @@ export class AlojamientoRepository {
 
             query.caracteristicas = { $all: caracteristicasArray };
         }
+
+        if (filters.ciudad) {
+            query['direccion.ciudad.nombre'] = { $regex: `^${filters.ciudad}$`, $options: 'i' };
+        }
+
+        if (filters.pais) {
+            query['direccion.ciudad.pais.nombre'] = { $regex: `^${filters.pais}$`, $options: 'i' };
+        }
+
+        if (filters.lat) {
+            query['direccion.lat'] = Number(filters.lat);
+        }
+
+        if (filters.long) {
+            query['direccion.long'] = Number(filters.long);
+        }
+
         return await this.model.find(query);
     }
   

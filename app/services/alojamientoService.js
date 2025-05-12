@@ -20,23 +20,39 @@ export class AlojamientoService {
   }
 
   async create(alojamiento) {
-    //direccion,
-    const { nombre, precioPorNoche, cantHuespedesMax, caracteristicas } = alojamiento;
+      const { nombre, precioPorNoche, cantHuespedesMax, caracteristicas, direccion } = alojamiento;
 
-    if (!nombre || typeof precioPorNoche !== "number" || typeof cantHuespedesMax !== "number" || !Array.isArray(caracteristicas) || !caracteristicas.every(c => typeof c === "string")) {
-      throw new ValidationError('Faltan campos requeridos o son inválidos');
-    }
-  
-    const existente = await this.alojamientoRepository.findByName(nombre);
-    if (existente) {
-      throw new ConflictError(`Ya existe un alojamiento con el nombre ${nombre}`);
-    }
-  
-    const nuevo = new Alojamiento( nombre, precioPorNoche, cantHuespedesMax, caracteristicas);
+      // Validación básica de campos principales
+      if (!nombre || typeof precioPorNoche !== "number" || typeof cantHuespedesMax !== "number" ||
+          !Array.isArray(caracteristicas) || !caracteristicas.every(c => typeof c === "string")) {
+          throw new ValidationError('Faltan campos requeridos o son inválidos');
+      }
 
-    const alojamientoGuardado = await this.alojamientoRepository.save(nuevo);
-    return this.toDTO(alojamientoGuardado);
+      if (!direccion 
+          || typeof direccion.calle !== "string"
+          || typeof direccion.altura !== "number"
+          || !direccion.ciudad
+          || typeof direccion.ciudad.nombre !== "string"
+          || !direccion.ciudad.pais
+          || typeof direccion.ciudad.pais.nombre !== "string"
+          || typeof direccion.lat !== "number"
+          || typeof direccion.long !== "number"
+      ) {
+          throw new ValidationError('La dirección es requerida y debe tener todos los campos correctos');
+      }
+
+      const existente = await this.alojamientoRepository.findByName(nombre);
+      if (existente) {
+          throw new ConflictError(`Ya existe un alojamiento con el nombre ${nombre}`);
+      }
+
+      const nuevo = new Alojamiento(nombre, precioPorNoche, cantHuespedesMax, caracteristicas);
+      nuevo.direccion = direccion;
+
+      const alojamientoGuardado = await this.alojamientoRepository.save(nuevo);
+      return this.toDTO(alojamientoGuardado);
   }
+
 
   async delete(id) {
     const deleted = await this.alojamientoRepository.deleteById(id);
@@ -47,16 +63,27 @@ export class AlojamientoService {
   }
 
   toDTO(alojamiento) {
-    return {
-      id: alojamiento.id,
-      nombre: alojamiento.nombre,
-      precioPorNoche: alojamiento.precioPorNoche,
-      cantHuespedesMax: alojamiento.cantHuespedesMax,
-      caracteristicas: alojamiento.caracteristicas
-      // direccionCiudad: alojamiento.direccion?.ciudad,
-      // direccionPais: alojamiento.direccion?.pais,
-      // direccionLat: alojamiento.direccion?.lat,
-      // direccionLong: alojamiento.direccion?.long
-    };
+      return {
+          id: alojamiento.id,
+          nombre: alojamiento.nombre,
+          precioPorNoche: alojamiento.precioPorNoche,
+          cantHuespedesMax: alojamiento.cantHuespedesMax,
+          caracteristicas: alojamiento.caracteristicas,
+          direccion: alojamiento.direccion ? {
+              calle: alojamiento.direccion.calle,
+              altura: alojamiento.direccion.altura,
+              ciudad: alojamiento.direccion.ciudad ? {
+                  id: alojamiento.direccion.ciudad.id,
+                  nombre: alojamiento.direccion.ciudad.nombre,
+                  pais: alojamiento.direccion.ciudad.pais ? {
+                      id: alojamiento.direccion.ciudad.pais.id,
+                      nombre: alojamiento.direccion.ciudad.pais.nombre
+                  } : undefined
+              } : undefined,
+              lat: alojamiento.direccion.lat,
+              long: alojamiento.direccion.long
+          } : undefined
+      };
   }
+
 }

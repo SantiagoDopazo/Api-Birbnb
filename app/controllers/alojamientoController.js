@@ -11,7 +11,11 @@ export class AlojamientoController {
           precioGte: req.query.precioGte,
           precioLte: req.query.precioLte,
           cantHuespedes: req.query.cantHuespedes,
-          caracteristicas: req.query.caracteristicas
+          caracteristicas: req.query.caracteristicas,
+          ciudad: req.query.ciudad,
+          pais: req.query.pais,
+          lat: req.query.lat,
+          long: req.query.long
         };
         const alojamientos = await this.alojamientoService.findAll(filters);
         res.json(alojamientos);
