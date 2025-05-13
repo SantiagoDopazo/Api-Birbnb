@@ -15,7 +15,9 @@ export class AlojamientoController {
           ciudad: req.query.ciudad,
           pais: req.query.pais,
           lat: req.query.lat,
-          long: req.query.long
+          long: req.query.long,
+          page: req.query.page,
+          limit: req.query.limit
         };
         const alojamientos = await this.alojamientoService.findAll(filters);
         res.json(alojamientos);

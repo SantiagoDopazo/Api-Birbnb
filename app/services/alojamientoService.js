@@ -7,9 +7,17 @@ export class AlojamientoService {
     }
   
   async findAll(filters = {}) {
-    const alojamientos = await this.alojamientoRepository.findAll(filters);
-    return alojamientos.map(alojamiento => this.toDTO(alojamiento));
+      const { results, total, page, limit } = await this.alojamientoRepository.findAll(filters);
+
+      return {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+          data: results.map(alojamiento => this.toDTO(alojamiento))
+      };
   }
+
 
   async findById(id) {
     const alojamiento = await this.alojamientoRepository.findById(id);
