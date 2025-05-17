@@ -5,7 +5,7 @@
   "dependencies": {
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "mongoose": "^8.15.0",
+    "mongoose": "^8.14.2",
     "zod": "^3.24.2"
   },
   "description": "Proyecto integrador para la materia **Diseño de Sistemas** en la UTN FRBA (1C 2025).  \r Birbnb es una plataforma de reservas de alojamientos no convencionales, como departamentos, cabañas y casas particulares, diseñada para facilitar la conexión entre anfitriones y huéspedes de manera sencilla, intuitiva y segura.",
