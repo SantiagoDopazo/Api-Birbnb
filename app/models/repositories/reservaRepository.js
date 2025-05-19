@@ -17,4 +17,9 @@ export class ReservaRepository {
             }
         );
     }
+
+    async deleteById(id) {
+        const resultado = await this.model.findByIdAndDelete(id);
+        return resultado !== null;
+    }
 }
