@@ -1,10 +1,12 @@
-import { Notificacion } from "../models/entities/Notificacion.js"
 import { NotFoundError, ValidationError, ConflictError } from "../errors/AppError.js";
+import { FactoryNotificacion } from "../models/entities/FactoryNotificacion.js";
+import { FactoryEstadoReserva } from "../models/entities/FactoryEstadoReserva.js";
+import { Reserva } from "../models/entities/Reserva.js"
 
 export class NotificacionService {
-  constructor(notificacionRepository) {
+  constructor(notificacionRepository, reservaRepository) {
     this.notificacionRepository = notificacionRepository;
-    this.usuarioRepository = this.usuarioRepository;
+    this.reservaRepository = reservaRepository;
   }
   
   async findAll(filters = {}) {
@@ -15,23 +17,59 @@ export class NotificacionService {
   async findById(id) {
     const notificacion = await this.notificacionRepository.findById(id);
     if (!notificacion) {
-      throw new NotFoundError(`notificacion con id ${id} no encontrado`);
+      throw new NotFoundError(`Notificacion con id ${id} no encontrada`);
     }
     return this.toDTO(notificacion);
   }
 
-  async marcarComoLeida(id) {
-    const notificacion = await this.notificacionRepository.findById(id);
-    if (!notificacion) {
-      throw new NotFoundError(`notificacion con id ${id} no encontrado`);
-    }
+async marcarComoLeida(id) {
+  const notificacion = await this.notificacionRepository.findById(id);
+  if (!notificacion) {
+    throw new NotFoundError(`Notificación con id ${id} no encontrada`);
+  }
 
-    notificacion.leida = true;
-    notificacion.fechaLeida = Date.now();
-    await notificacion.save();
+  const actualizado = await this.notificacionRepository.updateById(id, {
+    leida: true,
+    fechaLeida: new Date()
+  });
 
-    return this.toDTO(notificacion);
+  return this.toDTO(actualizado);
 }
+
+  async create(notificacion) {
+      const { mensaje, usuario, reserva } = notificacion;
+
+      if (!mensaje || !usuario || !reserva) {
+          throw new ValidationError('Faltan campos requeridos o son inválidos');
+      }
+
+      const usuarioId = usuario.id || usuario;
+      const reservaId = reserva.id || reserva;
+
+      const reservaCompleta = await this.reservaRepository.findById(reservaId);
+      if (!reservaCompleta) {
+          throw new NotFoundError('Reserva no encontrada');
+      }
+
+      const estado = FactoryEstadoReserva.crearDesdeNombre(reservaCompleta.estadoReserva);
+
+      const reservaNueva = new Reserva(
+        reservaCompleta.fechaAlta,
+        reservaCompleta.huespedReservador,
+        reservaCompleta.cantHuespedes,
+        reservaCompleta.alojamiento,
+        reservaCompleta.rangoFechas,
+        reservaCompleta.precioPorNoche,
+        estado
+      );
+
+      const factoryNotificacion = new FactoryNotificacion();
+      const nuevo = factoryNotificacion.crearSegunReserva(reservaNueva, reservaId);
+      nuevo.usuario = usuarioId;
+
+      const notificacionGuardada = await this.notificacionRepository.save(nuevo);
+      return this.toDTO(notificacionGuardada);
+  }
 
   toDTO(notificacion) {
     return {

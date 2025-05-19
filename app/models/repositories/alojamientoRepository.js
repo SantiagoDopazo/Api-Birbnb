@@ -47,15 +47,12 @@ export class AlojamientoRepository {
             query['direccion.long'] = Number(filters.long);
         }
 
-         // 🎯 Paginación
         const page = Number(filters.page) > 0 ? Number(filters.page) : 1;
         const limit = Number(filters.limit) > 0 ? Number(filters.limit) : 10;
         const skip = (page - 1) * limit;
 
-        // Contar total para poder mostrar páginas totales o cantidad total en UI
         const total = await this.model.countDocuments(query);
 
-        // Consulta paginada
         const results = await this.model.find(query).skip(skip).limit(limit);
 
         return {

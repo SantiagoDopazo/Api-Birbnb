@@ -18,6 +18,10 @@ export class ReservaRepository {
         );
     }
 
+    async findById(id) {
+        return await this.model.findById(id);
+    }
+
     async deleteById(id) {
         const resultado = await this.model.findByIdAndDelete(id);
         return resultado !== null;
