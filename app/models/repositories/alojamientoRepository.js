@@ -30,7 +30,42 @@ export class AlojamientoRepository {
 
             query.caracteristicas = { $all: caracteristicasArray };
         }
-        return await this.model.find(query);
+
+        if (filters.ciudad) {
+            query['direccion.ciudad.nombre'] = { $regex: `^${filters.ciudad}$`, $options: 'i' };
+        }
+
+        if (filters.pais) {
+            query['direccion.ciudad.pais.nombre'] = { $regex: `^${filters.pais}$`, $options: 'i' };
+        }
+
+        if (filters.lat) {
+            query['direccion.lat'] = Number(filters.lat);
+        }
+
+        if (filters.long) {
+            query['direccion.long'] = Number(filters.long);
+        }
+
+         // 🎯 Paginación
+        const page = Number(filters.page) > 0 ? Number(filters.page) : 1;
+        const limit = Number(filters.limit) > 0 ? Number(filters.limit) : 10;
+        const skip = (page - 1) * limit;
+
+        // Contar total para poder mostrar páginas totales o cantidad total en UI
+        const total = await this.model.countDocuments(query);
+
+        // Consulta paginada
+        const results = await this.model.find(query).skip(skip).limit(limit);
+
+        return {
+            page,
+            limit,
+            total,
+            results
+        };
+
+        //return await this.model.find(query);
     }
   
     async findById(id) {

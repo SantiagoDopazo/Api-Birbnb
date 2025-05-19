@@ -1,0 +1,141 @@
+openapi: 3.0.0
+info:
+  title: Birbnb
+  version: 1.0.0
+  description: Es como un Airbnb
+
+servers:
+  - url: http://localhost:3000
+
+paths:
+  /health_check:
+    get:
+      summary: Verifica el estado del servicio
+      responses:
+        '200':
+          description: OK
+
+  /usuarios:
+    get:
+      summary: Obtener lista de usuarios
+      responses:
+        '200':
+          description: Lista de usuarios
+
+    post:
+      summary: Crear un nuevo usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nombre
+                - email
+                - tipo
+              properties:
+                nombre:
+                  type: string
+                email:
+                  type: string
+                tipo:
+                  type: string
+      responses:
+        '201':
+          description: Usuario creado exitosamente
+
+  /usuarios/{id}:
+    get:
+      summary: Obtener usuario por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Usuario encontrado
+
+    delete:
+      summary: Eliminar usuario por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Usuario eliminado
+
+  /alojamientos:
+    get:
+      summary: Obtener alojamientos con filtros opcionales
+      parameters:
+        - name: pais
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de alojamientos
+
+    post:
+      summary: Crear un alojamiento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nombre
+                - precioPorNoche
+                - cantHuespedesMax
+                - direccion
+                - caracteristicas
+              properties:
+                nombre:
+                  type: string
+                precioPorNoche:
+                  type: number
+                cantHuespedesMax:
+                  type: integer
+                direccion:
+                  type: object
+                  properties:
+                    calle:
+                      type: string
+                    altura:
+                      type: integer
+                    ciudad:
+                      type: object
+                      properties:
+                        nombre:
+                          type: string
+                        pais:
+                          type: object
+                          properties:
+                            nombre:
+                              type: string
+                    lat:
+                      type: number
+                    long:
+                      type: number
+                caracteristicas:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Alojamiento creado

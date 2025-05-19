@@ -9,6 +9,10 @@ import { AlojamientoRepository } from "./app/models/repositories/alojamientoRepo
 import { AlojamientoService } from "./app/services/alojamientoService.js";
 import { AlojamientoController } from "./app/controllers/alojamientoController.js";
 
+import { ReservaRepository } from "./app/models/repositories/reservaRepository.js";
+import { ReservaService } from "./app/services/reservaService.js";
+import { ReservaController } from "./app/controllers/reservaController.js";
+
 import { NotificacionRepository } from "./app/models/repositories/notificacionRepository.js";
 import { NotificacionService } from "./app/services/notificacionService.js";
 import { NotificacionController } from "./app/controllers/notificacionController.js";
@@ -31,6 +35,10 @@ const alojamientoRepo = new AlojamientoRepository();
 const alojamientoService = new AlojamientoService(alojamientoRepo);
 const alojamientoController = new AlojamientoController(alojamientoService);
 
+const reservaRepo = new ReservaRepository();
+const reservaService = new ReservaService(reservaRepo);
+const reservaController = new ReservaController(reservaService)
+
 const notificacionRepo = new NotificacionRepository();
 const notificacionService = new NotificacionService(notificacionRepo);
 const notificacionController = new NotificacionController(notificacionService);
@@ -43,6 +51,8 @@ server.setController(HealthCheckController, healthCheckController);
 server.setController(AlojamientoController, alojamientoController);
 server.setController(NotificacionController, notificacionController);
 server.setController(UsuarioController, usuarioController);
+server.setController(ReservaController, reservaController)
 
 server.configureRoutes();
+
 server.launch();

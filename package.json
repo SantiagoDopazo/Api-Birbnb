@@ -11,7 +11,7 @@
   "description": "Proyecto integrador para la materia **Diseño de Sistemas** en la UTN FRBA (1C 2025).  \r Birbnb es una plataforma de reservas de alojamientos no convencionales, como departamentos, cabañas y casas particulares, diseñada para facilitar la conexión entre anfitriones y huéspedes de manera sencilla, intuitiva y segura.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "node server.js"
   },
   "repository": {
@@ -24,5 +24,12 @@
   "bugs": {
     "url": "https://github.com/ddso-utn/2025-1c-lu-sa-grupo-06/issues"
   },
-  "homepage": "https://github.com/ddso-utn/2025-1c-lu-sa-grupo-06#readme"
+  "homepage": "https://github.com/ddso-utn/2025-1c-lu-sa-grupo-06#readme",
+  "devDependencies": {
+    "@babel/core": "^7.27.1",
+    "@babel/preset-env": "^7.27.2",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "supertest": "^7.1.1"
+  }
 }
