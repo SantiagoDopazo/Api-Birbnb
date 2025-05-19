@@ -5,6 +5,10 @@ export class ReservaRepository {
         this.model = ReservaModel;
     }
 
+    async findAllByUsuario(usuarioId) {
+        return await this.model.find({ huespedReservador: usuarioId });
+    }
+
     async save(reserva) {
         const query = reserva.id ? {_id: reserva.id} : {_id: new this.model()._id};
         return await this.model.findOneAndUpdate(
