@@ -17,7 +17,6 @@ export class ReservaService {
             estadoReserva
         } = reserva;
 
-        // Validaciones básicas
         if (
             !fechaAlta ||
             !huespedReservador ||
@@ -40,8 +39,31 @@ export class ReservaService {
             throw new ValidationError("El precio por noche debe ser mayor o igual a 0");
         }
 
-        // Aquí podrías agregar más validaciones, por ejemplo, verificar solapamiento de fechas, etc.
+        const desde = new Date(rangoFechas.desde);
+        const hasta = new Date(rangoFechas.hasta);
 
+        if (isNaN(desde) || isNaN(hasta)) {
+            throw new ValidationError("Las fechas enviadas no son válidas");
+        }
+
+        if (desde > hasta) {
+            throw new ValidationError("La fecha desde no puede ser mayor que la fecha hasta");
+        }
+
+        const reservaSolapada = await this.reservaRepository.model.findOne({
+            alojamiento: alojamiento,
+            $or: [
+                {
+                    "rangoFechas.desde": { $lte: hasta },
+                    "rangoFechas.hasta": { $gte: desde }
+                }
+            ],
+            estadoReserva: { $ne: "CANCELADA" }
+        });
+
+    if (reservaSolapada) {
+        throw new ConflictError("Ya existe una reserva para este alojamiento en el rango de fechas seleccionado.");
+    }
         const nuevaReserva = new Reserva(
             fechaAlta,
             huespedReservador,
@@ -56,9 +78,17 @@ export class ReservaService {
         return this.toDTO(reservaGuardada);
     }
 
+    async delete(id) {
+        const deleted = await this.reservaRepository.deleteById(id);
+        if (!deleted) {
+        throw new NotFoundError(`reserva con id ${id} no encontrada`);
+        }
+        return deleted;
+    }
+
     toDTO(reserva) {
         return {
-            // id: reserva.id, // Solo si tienes un getter para id
+            id: reserva._id,
             fechaAlta: reserva.fechaAlta,
             huespedReservador: reserva.huespedReservador,
             cantHuespedes: reserva.cantHuespedes,
@@ -66,7 +96,7 @@ export class ReservaService {
             rangoFechas: reserva.rangoFechas,
             precioPorNoche: reserva.precioPorNoche,
             motivoCancelacion: reserva.motivoCancelacion,
-            estadoReserva: reserva.estado // Usar el getter
+            estadoReserva: reserva.estado
         };
     }
 }

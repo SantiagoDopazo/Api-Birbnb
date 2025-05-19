@@ -1,4 +1,5 @@
 export class Reserva {
+    id
     fechaAlta
     huespedReservador
     cantHuespedes
