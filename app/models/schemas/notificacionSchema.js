@@ -26,12 +26,17 @@ const notificacionSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+    fechaLeida: {
+        type: Date,
+        required: false,
+    },
     leida: {
         type: Boolean,
         default: false
     }
 }, {
-    timestamps: true
+    timestamps: true,
+    collection: 'notificaciones'
 });
 
 notificacionSchema.loadClass(Notificacion);

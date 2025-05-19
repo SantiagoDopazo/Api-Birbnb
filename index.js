@@ -40,7 +40,7 @@ const reservaService = new ReservaService(reservaRepo);
 const reservaController = new ReservaController(reservaService)
 
 const notificacionRepo = new NotificacionRepository();
-const notificacionService = new NotificacionService(notificacionRepo);
+const notificacionService = new NotificacionService(notificacionRepo, reservaRepo);
 const notificacionController = new NotificacionController(notificacionService);
 
 const usuarioRepo = new UsuarioRepository();

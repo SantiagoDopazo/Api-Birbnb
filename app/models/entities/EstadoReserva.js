@@ -1,22 +1,46 @@
+// export class EstadoPendiente {
+//     mensaje(reserva) {
+//         const huesped = reserva.huespedReservador;
+//         const alojamiento = reserva.alojamiento;
+//         const desde = reserva.rangoFechas.fechaInicio;
+//         const hasta = reserva.rangoFechas.fechaFin;
+
+//         const fechaInicio = new Date(desde);
+//         const fechaFin = new Date(hasta);
+//         const dias = Math.ceil((fechaFin - fechaInicio) / (1000 * 60 * 60 * 24));
+
+//         return `${huesped} realizó una reserva para el alojamiento ${alojamiento} desde el ${fechaInicio.toLocaleDateString()} hasta el ${fechaFin.toLocaleDateString()}, por ${dias} día(s).;`
+//     }
+
+//     destinatario(reserva) {
+//         return reserva.alojamiento.anfitrion
+//     }
+// }
+
 export class EstadoPendiente {
     mensaje(reserva) {
         const huesped = reserva.huespedReservador;
         const alojamiento = reserva.alojamiento;
-        const desde = reserva.rangoFechas.fechaInicio;
-        const hasta = reserva.rangoFechas.fechaFin;
+
+        const desde = reserva.rangoFechas.desde;
+        const hasta = reserva.rangoFechas.hasta;
 
         const fechaInicio = new Date(desde);
         const fechaFin = new Date(hasta);
+
+        if (isNaN(fechaInicio.getTime()) || isNaN(fechaFin.getTime())) {
+            throw new Error('Fechas de reserva inválidas');
+        }
+
         const dias = Math.ceil((fechaFin - fechaInicio) / (1000 * 60 * 60 * 24));
 
-        return `${huesped} realizó una reserva para el alojamiento ${alojamiento} desde el ${fechaInicio.toLocaleDateString()} hasta el ${fechaFin.toLocaleDateString()}, por ${dias} día(s).;`
+        return `${huesped} realizó una reserva para el alojamiento ${alojamiento} desde el ${fechaInicio.toLocaleDateString()} hasta el ${fechaFin.toLocaleDateString()}, por ${dias} día(s).`;
     }
 
     destinatario(reserva) {
-        return reserva.alojamiento.anfitrion
+        return reserva.alojamiento.anfitrion;
     }
 }
-
 export class EstadoConfirmada {
     mensaje(reserva) {
         return 'La reserva fue confirmada por el anfitrión'

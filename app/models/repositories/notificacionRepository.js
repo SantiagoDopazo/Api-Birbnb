@@ -41,4 +41,10 @@ export class NotificacionRepository {
             }
         );
     }
+    async updateById(id, update) {
+        return await this.model.findByIdAndUpdate(id, update, {
+            new: true,
+            runValidators: true
+        }).populate('usuario');
+    }
 }
