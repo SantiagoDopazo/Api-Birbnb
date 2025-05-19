@@ -15,4 +15,8 @@ export function registerNotificacionRoutes(app, getController) {
   app.patch("/notificaciones/:id/marcarLeida", (req, res, next) =>
     getController(NotificacionController).marcarComoLeida(req, res, next)
   );
+
+  app.post("/notificaciones", (req, res, next) =>
+    getController(NotificacionController).create(req, res, next)
+  );
 }

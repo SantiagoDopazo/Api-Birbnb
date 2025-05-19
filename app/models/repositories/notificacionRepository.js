@@ -24,4 +24,21 @@ export class NotificacionRepository {
     async findById(id) {
         return await this.model.findById(id).populate('usuario');
     }
+
+    async findByMensaje(mensaje, usuarioId) {
+        return await this.model.findOne({ mensaje, usuario: usuarioId });
+    }
+
+    async save(notificacion) {
+        const query = notificacion.id ? {_id: notificacion.id} : {_id: new this.model()._id};
+        return await this.model.findOneAndUpdate(
+            query,
+            notificacion,
+            { 
+                new: true, 
+                runValidators: true,
+                upsert: true
+            }
+        );
+    }
 }

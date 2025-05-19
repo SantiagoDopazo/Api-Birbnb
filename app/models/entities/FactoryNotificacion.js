@@ -3,7 +3,7 @@ export class FactoryNotificacion {
 
     crearSegunReserva(reserva) {
      
-        return new Notificacion(reserva.resumen(), reserva.destinatario());
+        return new Notificacion(reserva.resumen(), reserva.destinatario(), reserva);
             
     }
 }

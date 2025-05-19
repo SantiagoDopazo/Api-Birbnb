@@ -33,4 +33,13 @@ export class NotificacionController {
         next(error);
       }
     }
+
+    async create(req, res, next){
+      try {
+          const nuevaNotificacion = await this.notificacionService.create(req.body);
+          res.status(201).json(nuevaNotificacion);
+      } catch (error) {
+          next(error);
+      }
+    }
 }

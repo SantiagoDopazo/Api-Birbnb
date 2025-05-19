@@ -17,6 +17,11 @@ const notificacionSchema = new mongoose.Schema({
         ref: 'Usuario',
         required: true
     },
+    reserva: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Reserva',
+        required: true
+    },
     fechaAlta: {
         type: Date,
         required: true
