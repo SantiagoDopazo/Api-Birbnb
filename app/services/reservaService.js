@@ -79,10 +79,18 @@ export class ReservaService {
     }
 
     async delete(id) {
-        const deleted = await this.reservaRepository.deleteById(id);
-        if (!deleted) {
-        throw new NotFoundError(`reserva con id ${id} no encontrada`);
+        const reserva = await this.reservaRepository.model.findById(id);
+
+        if (!reserva) {
+            throw new NotFoundError(`reserva con id ${id} no encontrada`);
         }
+
+        const fechaInicio = new Date(reserva.rangoFechas.desde);
+        if (Date.now() >= fechaInicio.getTime()) {
+            throw new ConflictError("No se puede cancelar una reserva en curso o finalizada.");
+        }
+  
+        const deleted = await this.reservaRepository.deleteById(id);
         return deleted;
     }
 
