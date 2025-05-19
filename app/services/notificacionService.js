@@ -1,4 +1,3 @@
-// import { Notificacion } from "../models/entities/Notificacion.js"
 import { NotFoundError, ValidationError, ConflictError } from "../errors/AppError.js";
 import { FactoryNotificacion } from "../models/entities/FactoryNotificacion.js";
 import { FactoryEstadoReserva } from "../models/entities/FactoryEstadoReserva.js";
@@ -46,11 +45,6 @@ async marcarComoLeida(id) {
 
       const usuarioId = usuario.id || usuario;
       const reservaId = reserva.id || reserva;
-
-      const existente = await this.notificacionRepository.findByMensaje(mensaje, usuarioId);
-      if (existente) {
-          throw new ConflictError(`Ya existe una notificacion con el mensaje ${mensaje} para ese usuario`);
-      }
 
       const reservaCompleta = await this.reservaRepository.findById(reservaId);
       if (!reservaCompleta) {

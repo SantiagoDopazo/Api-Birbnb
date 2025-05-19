@@ -2,7 +2,7 @@ export class Usuario {
     nombre
     email
     tipo
-    notificaciones = []
+    // notificaciones = []
 
     constructor(nombre, email, tipo) {
         this.nombre = nombre

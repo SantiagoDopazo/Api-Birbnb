@@ -1,9 +1,6 @@
 import { NotificacionController } from "../controllers/notificacionController.js";
 
 export function registerNotificacionRoutes(app, getController) {
-
-  // GET /api/notificaciones?usuarioId=123&leida=false
-
    app.get("/notificaciones", (req, res, next) =>
     getController(NotificacionController).findAll(req, res, next)
   );
