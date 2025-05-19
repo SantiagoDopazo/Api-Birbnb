@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: Birbnb
+  title: Birbnb API
   version: 1.0.0
-  description: Es como un Airbnb
+  description: API de ejemplo similar a Airbnb.
 
 servers:
   - url: http://localhost:3000
@@ -97,45 +97,281 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - nombre
-                - precioPorNoche
-                - cantHuespedesMax
-                - direccion
-                - caracteristicas
-              properties:
-                nombre:
-                  type: string
-                precioPorNoche:
-                  type: number
-                cantHuespedesMax:
-                  type: integer
-                direccion:
-                  type: object
-                  properties:
-                    calle:
-                      type: string
-                    altura:
-                      type: integer
-                    ciudad:
-                      type: object
-                      properties:
-                        nombre:
-                          type: string
-                        pais:
-                          type: object
-                          properties:
-                            nombre:
-                              type: string
-                    lat:
-                      type: number
-                    long:
-                      type: number
-                caracteristicas:
-                  type: array
-                  items:
-                    type: string
+              $ref: '#/components/schemas/AlojamientoInput'
       responses:
         '201':
           description: Alojamiento creado
+
+  /reservas/usuario/{usuarioId}:
+    get:
+      summary: Obtener reservas por usuario
+      tags:
+        - Reservas
+      parameters:
+        - in: path
+          name: usuarioId
+          required: true
+          schema:
+            type: string
+          description: ID del usuario
+      responses:
+        '200':
+          description: Lista de reservas del usuario
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reserva'
+        '500':
+          description: Error del servidor
+
+  /reservas:
+    post:
+      summary: Crear una nueva reserva
+      tags:
+        - Reservas
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservaInput'
+      responses:
+        '201':
+          description: Reserva creada con éxito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reserva'
+        '400':
+          description: Datos inválidos
+        '500':
+          description: Error del servidor
+
+  /reservas/{id}:
+    put:
+      summary: Actualizar una reserva existente
+      tags:
+        - Reservas
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservaInput'
+      responses:
+        '200':
+          description: Reserva actualizada con éxito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reserva'
+        '404':
+          description: Reserva no encontrada
+        '500':
+          description: Error del servidor
+
+    delete:
+      summary: Eliminar una reserva
+      tags:
+        - Reservas
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Eliminado con éxito
+        '404':
+          description: Reserva no encontrada
+        '500':
+          description: Error del servidor
+
+  /notificaciones:
+    get:
+      summary: Obtener notificaciones con filtros
+      parameters:
+        - name: usuarioId
+          in: query
+          schema:
+            type: string
+        - name: leida
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Lista de notificaciones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notificacion'
+
+    post:
+      summary: Crear una nueva notificación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificacionInput'
+      responses:
+        '201':
+          description: Notificación creada
+
+  /notificaciones/{id}:
+    get:
+      summary: Obtener una notificación por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Notificación encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notificacion'
+
+  /notificaciones/{id}/marcar-leida:
+    put:
+      summary: Marcar una notificación como leída
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Notificación actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notificacion'
+
+components:
+  schemas:
+    AlojamientoInput:
+      type: object
+      required:
+        - nombre
+        - precioPorNoche
+        - cantHuespedesMax
+        - direccion
+        - caracteristicas
+      properties:
+        nombre:
+          type: string
+        precioPorNoche:
+          type: number
+        cantHuespedesMax:
+          type: integer
+        direccion:
+          type: object
+          properties:
+            calle:
+              type: string
+            altura:
+              type: integer
+            ciudad:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                pais:
+                  type: object
+                  properties:
+                    nombre:
+                      type: string
+            lat:
+              type: number
+            long:
+              type: number
+        caracteristicas:
+          type: array
+          items:
+            type: string
+
+    Reserva:
+      type: object
+      properties:
+        id:
+          type: string
+        usuarioId:
+          type: string
+        fecha:
+          type: string
+          format: date
+        hora:
+          type: string
+        observaciones:
+          type: string
+      required:
+        - id
+        - usuarioId
+        - fecha
+        - hora
+
+    ReservaInput:
+      type: object
+      properties:
+        usuarioId:
+          type: string
+        fecha:
+          type: string
+          format: date
+        hora:
+          type: string
+        observaciones:
+          type: string
+      required:
+        - usuarioId
+        - fecha
+        - hora
+
+    Notificacion:
+      type: object
+      properties:
+        id:
+          type: string
+        usuarioId:
+          type: string
+        mensaje:
+          type: string
+        leida:
+          type: boolean
+        fecha:
+          type: string
+          format: date-time
+      required:
+        - id
+        - usuarioId
+        - mensaje
+        - leida
+        - fecha
+
+    NotificacionInput:
+      type: object
+      properties:
+        usuarioId:
+          type: string
+        mensaje:
+          type: string
+      required:
+        - usuarioId
+        - mensaje
