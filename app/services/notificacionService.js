@@ -37,9 +37,9 @@ async marcarComoLeida(id) {
 }
 
   async create(notificacion) {
-      const { mensaje, usuario, reserva } = notificacion;
+      const { usuario, reserva } = notificacion;
 
-      if (!mensaje || !usuario || !reserva) {
+      if (!usuario || !reserva) {
           throw new ValidationError('Faltan campos requeridos o son inválidos');
       }
 

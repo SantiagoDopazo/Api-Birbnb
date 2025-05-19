@@ -4,7 +4,7 @@ import { Notificacion } from '../entities/Notificacion.js';
 const notificacionSchema = new mongoose.Schema({
     mensaje: {
         type: String,
-        required: true,
+        required: false,
         validate: {
             validator: function(v) {
                 return v.length >= 3;
