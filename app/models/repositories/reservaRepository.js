@@ -22,6 +22,14 @@ export class ReservaRepository {
         );
     }
 
+    async update(id, data) {
+    return await this.model.findByIdAndUpdate(
+        id,
+        data,
+        { new: true, runValidators: true }
+    );
+}
+
     async findById(id) {
         return await this.model.findById(id);
     }

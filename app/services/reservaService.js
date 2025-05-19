@@ -42,7 +42,7 @@ export class ReservaService {
         }
 
         
-        const reservaActualizada = await this.reservaRepository.save(reserva);
+        const reservaActualizada = await this.reservaRepository.update(id, reserva);
         return this.toDTO(reservaActualizada);
     }
 
