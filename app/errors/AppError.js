@@ -15,6 +15,13 @@ export class NotFoundError extends AppError {
   }
 }
 
+export class ValidationErrors extends AppError {
+  constructor(message, errors = {}) {
+    super(message, 400);
+    this.errors = errors;
+  }
+}
+
 export class ValidationError extends AppError {
   constructor(message = 'Datos de validación inválidos') {
     super(message, 400);

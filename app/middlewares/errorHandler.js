@@ -10,19 +10,24 @@ export const errorHandler = (err, req, res, next) => {
       stack: err.stack
     });
   } else {
-    // Producción
+    
     if (err.isOperational) {
-      res.status(err.statusCode).json({
+      const response = {
         status: err.status,
         message: err.message
-      });
-    } else {
-      // Error de programación: no enviar detalles al cliente
-      console.error('ERROR 💥', err);
-      res.status(500).json({
-        status: 'error',
-        message: 'Algo salió mal'
-      });
+      };
+
+      if (err.errors && typeof err.errors === 'object') {
+        response.errors = err.errors;
+      }
+
+      return res.status(err.statusCode).json(response);
     }
+
+    console.error('ERROR 💥', err);
+    res.status(500).json({
+      status: 'error',
+      message: 'Algo salió mal'
+    });
   }
-}; 
+};

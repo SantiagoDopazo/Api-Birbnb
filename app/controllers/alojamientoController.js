@@ -4,27 +4,45 @@ export class AlojamientoController {
     }
 
     async findAll(req, res, next) {
-      try {
-        const filters = {
-          precioGt: req.query.precioGt,
-          precioLt: req.query.precioLt,
-          precioGte: req.query.precioGte,
-          precioLte: req.query.precioLte,
-          cantHuespedes: req.query.cantHuespedes,
-          caracteristicas: req.query.caracteristicas,
-          ciudad: req.query.ciudad,
-          pais: req.query.pais,
-          lat: req.query.lat,
-          long: req.query.long,
-          page: req.query.page,
-          limit: req.query.limit
-        };
-        const alojamientos = await this.alojamientoService.findAll(filters);
-        res.json(alojamientos);
-      } catch (error) {
-        next(error);
-      }
+    try {
+      // Extraemos page y limit y el resto como filtros
+      const { page = "1", limit = "10", ...filters } = req.query;
+
+      // Convertimos page y limit a números
+      const pageNum = Number(page);
+      const limitNum = Number(limit);
+
+      const alojamientos = await this.alojamientoService.findAll(filters, pageNum, limitNum);
+
+      res.json(alojamientos);
+    } catch (error) {
+      next(error);
     }
+  }
+
+    // async findAll(req, res, next) {
+    //   try {
+    //     const filters = {
+    //       precioGt: req.query.precioGt,
+    //       precioLt: req.query.precioLt,
+    //       precioGte: req.query.precioGte,
+    //       precioLte: req.query.precioLte,
+    //       cantHuespedes: req.query.cantHuespedes,
+    //       caracteristicas: req.query.caracteristicas,
+    //       ciudad: req.query.ciudad,
+    //       pais: req.query.pais,
+    //       lat: req.query.lat,
+    //       long: req.query.long,
+    //       //separar de los filtros de la paginacion
+    //       page: req.query.page, 
+    //       limit: req.query.limit
+    //     };
+    //     const alojamientos = await this.alojamientoService.findAll(filters);
+    //     res.json(alojamientos);
+    //   } catch (error) {
+    //     next(error);
+    //   }
+    // }
   
     async findById(req, res, next) {
       try {
