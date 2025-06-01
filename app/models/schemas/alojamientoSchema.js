@@ -2,6 +2,11 @@ import mongoose from 'mongoose';
 import { Alojamiento } from '../entities/Alojamiento.js';
 
 const alojamientoSchema = new mongoose.Schema({
+    anfitrion: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Usuario',
+        required: true
+    },
     nombre: {
         type: String,
         required: true,

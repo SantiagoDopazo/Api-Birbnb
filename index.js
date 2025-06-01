@@ -31,10 +31,6 @@ MongoDBClient.connect();
 
 const healthCheckController = new HealthCheckController();
 
-const alojamientoRepo = new AlojamientoRepository();
-const alojamientoService = new AlojamientoService(alojamientoRepo);
-const alojamientoController = new AlojamientoController(alojamientoService);
-
 const reservaRepo = new ReservaRepository();
 const reservaService = new ReservaService(reservaRepo);
 const reservaController = new ReservaController(reservaService)
@@ -46,6 +42,10 @@ const notificacionController = new NotificacionController(notificacionService);
 const usuarioRepo = new UsuarioRepository();
 const usuarioService = new UsuarioService(usuarioRepo);
 const usuarioController = new UsuarioController(usuarioService);
+
+const alojamientoRepo = new AlojamientoRepository();
+const alojamientoService = new AlojamientoService(alojamientoRepo, usuarioRepo);
+const alojamientoController = new AlojamientoController(alojamientoService);
 
 server.setController(HealthCheckController, healthCheckController);
 server.setController(AlojamientoController, alojamientoController);

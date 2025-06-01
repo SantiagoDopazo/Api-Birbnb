@@ -1,6 +1,5 @@
 export class Alojamiento {
     id
-    anfitrion
     descripcion
     moneda
     horarioCheckIn
@@ -9,7 +8,8 @@ export class Alojamiento {
     reservas = []
     fotos = []
 
-    constructor(nombre, precioPorNoche, cantHuespedesMax, caracteristicas = []) {
+    constructor(anfitrion, nombre, precioPorNoche, cantHuespedesMax, caracteristicas = []) {
+        this.anfitrion = anfitrion
         this.nombre = nombre
         this.precioPorNoche = precioPorNoche
         this.cantHuespedesMax = cantHuespedesMax

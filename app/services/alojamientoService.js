@@ -2,36 +2,21 @@ import { Alojamiento } from "../models/entities/Alojamiento.js"
 import { NotFoundError, ValidationError, ValidationErrors, ConflictError } from "../errors/AppError.js";
 
 export class AlojamientoService {
-    constructor(alojamientoRepository) {
+    constructor(alojamientoRepository, usuarioRepository) {
       this.alojamientoRepository = alojamientoRepository
+      this.usuarioRepository = usuarioRepository
     }
   
-  // async findAll(filters = {}) {
 
-  //     this.validarFiltrosBusqueda(filters);
-
-  //     const { results, total, page, limit } = await this.alojamientoRepository.findAll(filters);
-
-  //     return {
-  //         total,
-  //         page,
-  //         limit,
-  //         totalPages: Math.ceil(total / limit),
-  //         data: results.map(alojamiento => this.toDTO(alojamiento))
-  //     };
-  // }
   async findAll(filters = {}, page = 1, limit = 10) {
-    // Validar filtros, puede ser un método aparte
+
     this.validarFiltrosBusqueda(filters);
 
-    // Asegurar que page y limit son números válidos
     if (!Number.isInteger(page) || page < 1) page = 1;
     if (!Number.isInteger(limit) || limit < 1) limit = 10;
 
-    // Calcular skip para paginación
     const skip = (page - 1) * limit;
 
-    // Llamar al repo con filtros, skip y limit
     const { results, total } = await this.alojamientoRepository.findAll(filters, skip, limit);
 
     return {
@@ -53,11 +38,11 @@ export class AlojamientoService {
   }
 
   async create(alojamiento) {
-      this.validarAlojamiento(alojamiento);
+      await this.validarAlojamiento(alojamiento);
 
-      const { nombre, precioPorNoche, cantHuespedesMax, caracteristicas, direccion } = alojamiento;
+      const { anfitrion, nombre, precioPorNoche, cantHuespedesMax, caracteristicas, direccion } = alojamiento;
 
-      const nuevo = new Alojamiento(nombre, precioPorNoche, cantHuespedesMax, caracteristicas);
+      const nuevo = new Alojamiento(anfitrion, nombre, precioPorNoche, cantHuespedesMax, caracteristicas);
       nuevo.direccion = direccion;
 
       const alojamientoGuardado = await this.alojamientoRepository.save(nuevo);
@@ -131,10 +116,10 @@ export class AlojamientoService {
 
 
 
-  validarAlojamiento(alojamiento) {
+  async validarAlojamiento(alojamiento) {
     if (!alojamiento) throw new ValidationError("El objeto alojamiento es requerido.");
 
-    const { nombre, precioPorNoche, cantHuespedesMax, caracteristicas, direccion } = alojamiento;
+    const {anfitrion, nombre, precioPorNoche, cantHuespedesMax, caracteristicas, direccion } = alojamiento;
 
     if (!nombre || typeof nombre !== "string") {
       throw new ValidationError("El campo 'nombre' es requerido y debe ser una cadena de texto.");
@@ -192,11 +177,29 @@ export class AlojamientoService {
     if (typeof direccion.long !== "number" || isNaN(direccion.long)) {
       throw new ValidationError("El campo 'direccion.long' es requerido y debe ser un número.");
     }
+
+    if(!anfitrion){
+      throw new ValidationError("El campo 'anfitrion' es requerido");
+    }
+
+    if (anfitrion.length != 24) {
+      throw new ValidationError("El id ingresado no es válido, recuerde que debe tener 24 caracteres");
+    }
+
+    const anfitrionEncontrado = await this.usuarioRepository.findById(anfitrion);
+    if (!anfitrionEncontrado) {
+      throw new ValidationError("No se encontró un usuario con el id ingresado");
+    }
+    if (anfitrionEncontrado.tipo != 'ANFITRION') {
+      throw new ValidationError("El usuario ingresado no es un anfitrión");
+    }
+
   }
 
   toDTO(alojamiento) {
       return {
           id: alojamiento.id,
+          anfitrion: alojamiento.anfitrion,
           nombre: alojamiento.nombre,
           precioPorNoche: alojamiento.precioPorNoche,
           cantHuespedesMax: alojamiento.cantHuespedesMax,
