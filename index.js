@@ -35,13 +35,14 @@ const reservaRepo = new ReservaRepository();
 const reservaService = new ReservaService(reservaRepo);
 const reservaController = new ReservaController(reservaService)
 
-const notificacionRepo = new NotificacionRepository();
-const notificacionService = new NotificacionService(notificacionRepo, reservaRepo);
-const notificacionController = new NotificacionController(notificacionService);
 
 const usuarioRepo = new UsuarioRepository();
 const usuarioService = new UsuarioService(usuarioRepo);
 const usuarioController = new UsuarioController(usuarioService);
+
+const notificacionRepo = new NotificacionRepository();
+const notificacionService = new NotificacionService(notificacionRepo, reservaRepo,usuarioRepo);
+const notificacionController = new NotificacionController(notificacionService);
 
 const alojamientoRepo = new AlojamientoRepository();
 const alojamientoService = new AlojamientoService(alojamientoRepo, usuarioRepo);

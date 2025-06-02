@@ -9,7 +9,7 @@ export function registerNotificacionRoutes(app, getController) {
     getController(NotificacionController).findById(req, res, next)
   );
 
-  app.patch("/notificaciones/:id/marcarLeida", (req, res, next) =>
+  app.patch("/notificaciones/:id", (req, res, next) =>
     getController(NotificacionController).marcarComoLeida(req, res, next)
   );
 
