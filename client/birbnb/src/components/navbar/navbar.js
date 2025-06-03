@@ -4,21 +4,21 @@ const Navbar = () => {
   return (
     <header className="navbar-bg">
       <nav className="navbar">
-        <div className="navbar-section left">
-          <input type = "image" src = "images/logo.png" alt = "boton" width = "100"></input>
+        <div className="navbar-left">
+          <input type = "image" src = "images/logo.png" alt = "boton" width = "100" className='logo'></input>
           <div className="search-bar">
             <input type="text" placeholder="Buscar" />
             <button className="search-icon">🔍</button>
           </div>
         </div>
 
-        <div className="navbar-section center">
+        <div className="navbar-center">
           <div className="brand">
             <h1 className="brand-text"> 🍀 ESTO ES HAPPY NEW YEAR</h1>
           </div>
         </div>
 
-        <div className="navbar-section right">
+        <div className="navbar-right">
           <button className="cart">
             👜
             <span className="cart-count">0</span>
