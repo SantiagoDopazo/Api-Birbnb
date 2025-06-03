@@ -11,8 +11,11 @@ export class NotificacionService {
   }
   
   async findAll(filters = {}) { 
-    const {usuarioId} = filters
-    await this.validarUsuario(usuarioId);
+
+    if({usuarioId} = filters) { //chequear esto
+      const {usuarioId} = filters
+      await this.validarUsuario(usuarioId);
+    }
 
     const notificaciones = await this.notificacionRepository.findAll(filters);
     return notificaciones.map(notificacion => this.toDTO(notificacion));
