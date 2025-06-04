@@ -23,12 +23,16 @@ export const Checkbox = ({ label, ...props }) => (
 
 // Componente principal Filtros
 export const Filtros = ({ onBuscar }) => {
-  const [ciudad, setCiudad] = useState('Las Vegas');
-  const [pais, setPais] = useState('Estados Unidos');
-  const [precioMin, setPrecioMin] = useState(49);
-  const [precioMax, setPrecioMax] = useState(51);
-  const [huespedes, setHuespedes] = useState(7);
-  const [caracteristicas, setCaracteristicas] = useState({ WiFi: true, 'Vista al lago': true });
+  const [ciudad, setCiudad] = useState('');
+  const [pais, setPais] = useState('');
+  const [precioMin, setPrecioMin] = useState();
+  const [precioMax, setPrecioMax] = useState();
+  const [huespedes, setHuespedes] = useState();
+  const [caracteristicas, setCaracteristicas] = useState({ 
+    'WiFi': false, 
+    'Vista al lago': false, 
+    'Parrilla': false 
+  });
 
   const manejarBusqueda = () => {
     const seleccionadas = Object.keys(caracteristicas).filter(k => caracteristicas[k]);
