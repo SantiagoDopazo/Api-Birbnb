@@ -1,6 +1,8 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+import cors from "cors";
+
 import express from "express";
 import { Server } from "./app/server/server.js";
 import { MongoDBClient } from "./app/config/database.js";
@@ -25,7 +27,14 @@ import { HealthCheckController } from "./app/controllers/healthCheckController.j
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+app.use(cors({
+  origin: 'http://localhost:3001'
+}));
+
+
 const server = new Server(app, port);
+
 
 MongoDBClient.connect();
 
