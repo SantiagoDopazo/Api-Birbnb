@@ -1,8 +1,12 @@
+import './AlojamientoPage.css';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Input, Button, Checkbox, Filtros } from '../../components/Filtros';
+import { Input, Button, Checkbox, Filtros } from '../../components/filtros/Filtros';
 import Skeleton from '../../components/LoaderSkeleton';
 import AlojamientoCard from '../../components/AlojamientoCard';
+import { LoadingOutlined } from '@ant-design/icons';
+import { Flex, Spin } from 'antd';
+
 
 const AlojamientoPage = () => {
   const [alojamientos, setAlojamientos] = useState([]);
@@ -46,17 +50,10 @@ useEffect(() => {
 }, []);
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1100px', margin: '0 auto' }}>
-      <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '20px' }}>
+    <div className='contenedor-principal'>
+      <h1 className='texto'>
         Buscar alojamientos
       </h1>
-
-      {/* <button
-        className='botonFiltros'
-        onClick={() => setMostrarFiltros(!mostrarFiltros)}
-      >
-        {mostrarFiltros ? 'Ocultar filtros' : 'Mostrar filtros'}
-      </button> */}
 
       <button
         className="botonFiltros"
@@ -92,15 +89,17 @@ useEffect(() => {
 
       {mostrarFiltros && <Filtros onBuscar={buscar} />}
 
-      <div style={{ marginTop: '30px', display: 'grid', gap: '20px' }}>
         {cargando ? (
-          Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} style={{ height: '160px', width: '100%', maxWidth: '500px' }} />
-          ))
+          <div className="spinner-container">
+            <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
+          </div>
         ) : (
-          alojamientos.map((a) => <AlojamientoCard key={a.id} alojamiento={a} />)
+          <div className="grid-alojamientos">
+            {alojamientos.map((a) => (
+              <AlojamientoCard key={a.id} alojamiento={a} />
+            ))}
+          </div>
         )}
-      </div>
     </div>
   );
 }

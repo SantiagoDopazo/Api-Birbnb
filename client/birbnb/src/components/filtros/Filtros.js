@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import './Filtros.css';
+import { Slider } from 'antd';
 
 // Componentes reutilizables
 export const Input = ({ label, ...props }) => (
@@ -43,24 +45,38 @@ export const Filtros = ({ onBuscar }) => {
   };
 
   return (
-    <div className="p-4 grid gap-4 bg-white rounded-2xl shadow w-full max-w-4xl mx-auto">
-      <Input label="Ciudad" value={ciudad} onChange={e => setCiudad(e.target.value)} />
-      <Input label="País" value={pais} onChange={e => setPais(e.target.value)} />
-      <Input label="Precio mínimo" type="number" value={precioMin} onChange={e => setPrecioMin(Number(e.target.value))} />
-      <Input label="Precio máximo" type="number" value={precioMax} onChange={e => setPrecioMax(Number(e.target.value))} />
-      <Input label="Huéspedes" type="number" value={huespedes} onChange={e => setHuespedes(Number(e.target.value))} />
-      <div className="flex flex-col space-y-2">
-        {Object.keys(caracteristicas).map((key) => (
-          <Checkbox
-            key={key}
-            label={key}
-            checked={caracteristicas[key]}
-            onChange={() => setCaracteristicas(prev => ({ ...prev, [key]: !prev[key] }))}
+    <>
+      <div className="filtros">
+        <Input label="Ciudad" value={ciudad} onChange={e => setCiudad(e.target.value)} />
+        <Input label="País" value={pais} onChange={e => setPais(e.target.value)} />
+        <div className="form-group">
+          <label>Rango de precios</label>
+          <Slider
+            range
+            min={0}
+            max={200}
+            step={1}
+            value={[precioMin || 0, precioMax || 200]}
+            onChange={([min, max]) => {
+              setPrecioMin(min);
+              setPrecioMax(max);
+            }}
           />
-        ))}
+        </div>
+        <Input label="Huéspedes" type="number" value={huespedes} onChange={e => setHuespedes(Number(e.target.value))} />
+        <div className="caracteristicas">
+          {Object.keys(caracteristicas).map((key) => (
+            <Checkbox
+              key={key}
+              label={key}
+              checked={caracteristicas[key]}
+              onChange={() => setCaracteristicas(prev => ({ ...prev, [key]: !prev[key] }))}
+            />
+          ))}
+        </div>
       </div>
-      <Button onClick={manejarBusqueda}>Buscar</Button>
-    </div>
+        <Button onClick={manejarBusqueda}>Buscar</Button>
+    </>
   );
 };
 

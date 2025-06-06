@@ -2,6 +2,7 @@ import React from 'react';
 import { Carousel } from 'antd';
 import AboutUs from '../aboutUs/AboutUs';
 import ContactUs from '../contactUs/ContactUs';
+import './HomePage.css';
 
 
 const contentStyle = {
