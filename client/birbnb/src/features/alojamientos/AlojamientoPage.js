@@ -9,32 +9,6 @@ const AlojamientoPage = () => {
   const [cargando, setCargando] = useState(false);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
 
-  // const buscar = async ({ ciudad, pais, precioMin, precioMax, huespedes, caracteristicas }) => {
-  //   setCargando(true);
-  //   const params = new URLSearchParams({
-  //     limit: 10,
-  //     page: 1,
-  //     precioGte: precioMin,
-  //     precioLte: precioMax,
-  //     precioGt: precioMin - 1,
-  //     precioLt: precioMax + 1,
-  //     cantHuespedes: huespedes,
-  //     caracteristicas: caracteristicas.join(','),
-  //     ciudad,
-  //     pais,
-  //     lat: 36.1699,
-  //     long: -115.1398
-  //   });
-  //   try {
-  //     const res = await axios.get(`http://localhost:3000/alojamientos?${params.toString()}`);
-  //     setAlojamientos(res.data.data);
-  //   } catch (err) {
-  //     console.error(err);
-  //   } finally {
-  //     setCargando(false);
-  //   }
-  // };
-
   const buscar = async ({ ciudad, pais, precioMin, precioMax, huespedes, caracteristicas } = {}) => {
   setCargando(true);
   const params = new URLSearchParams({ limit: 20, page: 1 });
@@ -71,20 +45,6 @@ useEffect(() => {
   buscar({});
 }, []);
 
-
-  // return (
-  //   <div className="p-4 max-w-6xl mx-auto">
-  //     <h1 className="text-3xl font-bold mb-6">Buscar alojamientos</h1>
-  //     <Filtros onBuscar={buscar} />
-  //     <div className="mt-6 grid gap-4">
-  //       {cargando ? (
-  //         Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-40 w-full max-w-md" />)
-  //       ) : (
-  //         alojamientos.map(a => <AlojamientoCard key={a.id} alojamiento={a} />)
-  //       )}
-  //     </div>
-  //   </div>
-  // );
   return (
     <div style={{ padding: '20px', maxWidth: '1100px', margin: '0 auto' }}>
       <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '20px' }}>

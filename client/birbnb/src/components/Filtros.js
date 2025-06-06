@@ -31,7 +31,10 @@ export const Filtros = ({ onBuscar }) => {
   const [caracteristicas, setCaracteristicas] = useState({ 
     'WiFi': false, 
     'Vista al lago': false, 
-    'Parrilla': false 
+    'Parrilla': false,
+    'Piscina': false,
+    'Mascotas permitidas': false,
+    'Estacionamiento': false
   });
 
   const manejarBusqueda = () => {
