@@ -1,8 +1,8 @@
 .filtros {
   display: flex;
   flex-direction: column;
-  gap: 16px; /* Espaciado uniforme entre inputs, checkboxes y botón */
-  margin-bottom: 24px; /* Espacio debajo de los filtros */
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 /* Ajuste más específico para separar el botón de abajo */
@@ -20,4 +20,42 @@
 /* Opcional: darle aire al botón "Filters" arriba */
 .botonFiltros {
   margin-bottom: 20px;
+}
+
+.botonesFilters {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.form-group {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.checkbox {
+  margin-right: 12px;
+  font-size: 14px;
 }

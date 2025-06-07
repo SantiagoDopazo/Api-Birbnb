@@ -44,6 +44,22 @@ export const Filtros = ({ onBuscar }) => {
     onBuscar({ ciudad, pais, precioMin, precioMax, huespedes, caracteristicas: seleccionadas });
   };
 
+  const eliminarFiltros = () => {
+    setCiudad('');
+    setPais('');
+    setPrecioMin();
+    setPrecioMax();
+    setHuespedes('');
+    setCaracteristicas({
+    'WiFi': false, 
+    'Vista al lago': false, 
+    'Parrilla': false,
+    'Piscina': false,
+    'Mascotas permitidas': false,
+    'Estacionamiento': false
+    });
+  };
+
   return (
     <>
       <div className="filtros">
@@ -75,7 +91,10 @@ export const Filtros = ({ onBuscar }) => {
           ))}
         </div>
       </div>
+      <div className="botonesFilters">
         <Button onClick={manejarBusqueda}>Buscar</Button>
+        <Button onClick={eliminarFiltros}>Eliminar filtros</Button>
+      </div>
     </>
   );
 };
