@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { Card, Flex } from 'antd';
+import { Button, Card, Flex } from 'antd';
+import { CalendarOutlined } from '@ant-design/icons';
+import './AlojamientoCard.css';
+import { Link } from 'react-router-dom';
 
 
 const AlojamientoCard = ({ alojamiento, loading }) => {
@@ -19,6 +22,11 @@ const AlojamientoCard = ({ alojamiento, loading }) => {
                   <span key={i}>{c} </span>
                 ))}
               </div>
+              <Flex gap="middle" wrap className="boton-reserva">
+                <Link to="/alojamientoRecord" state={{ alojamiento }}>
+                  <Button type="primary">Reserva ahora! <CalendarOutlined /></Button>
+                </Link>
+              </Flex>
             </>
           }
         />

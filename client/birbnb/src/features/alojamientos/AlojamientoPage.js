@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Input, Button, Checkbox, Filtros } from '../../components/filtros/Filtros';
 import Skeleton from '../../components/LoaderSkeleton';
-import AlojamientoCard from '../../components/AlojamientoCard';
+import AlojamientoCard from '../../components/alojamientoCard/AlojamientoCard';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Flex, Spin } from 'antd';
 

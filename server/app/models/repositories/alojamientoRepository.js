@@ -57,16 +57,30 @@ export class AlojamientoRepository {
     }
   
     async save(alojamiento) {
-        const query = alojamiento.id ? { _id: alojamiento.id } : { _id: new this.model()._id };
-        return await this.model.findOneAndUpdate(
-            query,
-            alojamiento,
-            { 
-                new: true, 
-                runValidators: true,
-                upsert: true
-            }
+
+      const data = {
+        anfitrion: alojamiento.anfitrion,
+        nombre: alojamiento.nombre,
+        descripcion: alojamiento.descripcion,
+        horarioCheckIn: alojamiento.horarioCheckIn,
+        horarioCheckOut: alojamiento.horarioCheckOut,
+        precioPorNoche: alojamiento.precioPorNoche,
+        cantHuespedesMax: alojamiento.cantHuespedesMax,
+        caracteristicas: alojamiento.caracteristicas,
+        fotos: alojamiento.fotos,
+        direccion: alojamiento.direccion
+      };
+
+      if (alojamiento.id) {
+        return await this.model.findByIdAndUpdate(
+          alojamiento.id,
+          data,
+          { new: true, runValidators: true }
         );
+      } else {
+        const nuevo = new this.model(data);
+        return await nuevo.save();
+      }
     }
   
     async deleteById(id) {

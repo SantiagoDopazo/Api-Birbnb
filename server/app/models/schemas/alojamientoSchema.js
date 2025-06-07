@@ -18,6 +18,37 @@ const alojamientoSchema = new mongoose.Schema({
             message: 'El nombre debe tener al menos 3 caracteres'
         }
     },
+    descripcion: {
+        type: String,
+        required: true,
+        trim: true,
+        validate: {
+            validator: function(v) {
+                return v.length >= 3;
+            },
+            message: 'La descripcion debe tener al menos 3 caracteres'
+        }
+    },
+    horarioCheckIn: {
+        type: String,
+        required: true,
+        validate: {
+            validator: function(v) {
+                return /^([01]\d|2[0-3]):[0-5]\d$/.test(v);
+            },
+            message: props => `${props.value} no es un horario válido (HH:mm)`
+        }
+    },
+    horarioCheckOut: {
+        type: String,
+        required: true,
+        validate: {
+            validator: function(v) {
+                return /^([01]\d|2[0-3]):[0-5]\d$/.test(v);
+            },
+            message: props => `${props.value} no es un horario válido (HH:mm)`
+        }
+    },
     precioPorNoche: {
         type: Number,
         required: true,
@@ -31,7 +62,27 @@ const alojamientoSchema = new mongoose.Schema({
     caracteristicas: {
         type: [String]
     },
-    
+
+    fotos: {
+        type: [String],
+        validate: {
+            validator: function(arr) {
+          
+                function esUrlValida(url) {
+                    try {
+                        new URL(url);
+                        return true;
+                    } catch {
+                        return false;
+                    }
+                }
+
+                return arr.every(url => typeof url === 'string' && esUrlValida(url));
+            },
+            message: 'Cada foto debe ser una URL válida.'
+        }
+    },
+
     direccion: {
         calle: { type: String, required: true, trim: true },
         altura: { type: Number, required: true, min: 0 },
@@ -50,4 +101,4 @@ const alojamientoSchema = new mongoose.Schema({
 
 alojamientoSchema.loadClass(Alojamiento);
 
-export const AlojamientoModel = mongoose.model('Alojamiento', alojamientoSchema); 
+export const AlojamientoModel = mongoose.model('Alojamiento', alojamientoSchema);

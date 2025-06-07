@@ -40,9 +40,20 @@ export class AlojamientoService {
   async create(alojamiento) {
       await this.validarAlojamiento(alojamiento);
 
-      const { anfitrion, nombre, precioPorNoche, cantHuespedesMax, caracteristicas, direccion } = alojamiento;
+      const {
+        anfitrion,
+        nombre,
+        precioPorNoche,
+        cantHuespedesMax,
+        caracteristicas,
+        direccion,
+        descripcion,
+        horarioCheckIn,
+        horarioCheckOut,
+        fotos
+      } = alojamiento;
 
-      const nuevo = new Alojamiento(anfitrion, nombre, precioPorNoche, cantHuespedesMax, caracteristicas);
+      const nuevo = new Alojamiento(anfitrion, nombre, precioPorNoche, cantHuespedesMax, caracteristicas, descripcion, horarioCheckIn, horarioCheckOut, fotos);
       nuevo.direccion = direccion;
 
       const alojamientoGuardado = await this.alojamientoRepository.save(nuevo);
@@ -119,7 +130,18 @@ export class AlojamientoService {
   async validarAlojamiento(alojamiento) {
     if (!alojamiento) throw new ValidationError("El objeto alojamiento es requerido.");
 
-    const {anfitrion, nombre, precioPorNoche, cantHuespedesMax, caracteristicas, direccion } = alojamiento;
+    const {
+      anfitrion,
+      nombre,
+      precioPorNoche,
+      cantHuespedesMax,
+      caracteristicas,
+      direccion,
+      descripcion,
+      horarioCheckIn,
+      horarioCheckOut,
+      fotos
+    } = alojamiento;
 
     if (!nombre || typeof nombre !== "string") {
       throw new ValidationError("El campo 'nombre' es requerido y debe ser una cadena de texto.");
@@ -194,31 +216,76 @@ export class AlojamientoService {
       throw new ValidationError("El usuario ingresado no es un anfitrión");
     }
 
+    if (!descripcion || typeof descripcion !== "string") {
+      throw new ValidationError("El campo 'descripcion' es requerido y debe ser una cadena de texto.");
+    }
+    if (descripcion.trim().length < 3) {
+      throw new ValidationError("La 'descripcion' debe tener al menos 3 caracteres.");
+    }
+
+    if (!horarioCheckIn || typeof horarioCheckIn !== "string") {
+      throw new ValidationError("El campo 'horarioCheckIn' es requerido y debe ser una cadena.");
+    }
+    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(horarioCheckIn)) {
+      throw new ValidationError("El campo 'horarioCheckIn' debe tener el formato HH:mm.");
+    }
+
+    if (!horarioCheckOut || typeof horarioCheckOut !== "string") {
+      throw new ValidationError("El campo 'horarioCheckOut' es requerido y debe ser una cadena.");
+    }
+    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(horarioCheckOut)) {
+      throw new ValidationError("El campo 'horarioCheckOut' debe tener el formato HH:mm.");
+    }
+
+    if (fotos !== undefined) {
+      if (!Array.isArray(fotos)) {
+        throw new ValidationError("El campo 'fotos' debe ser un array.");
+      }
+
+      function esUrlValida(url) {
+        try {
+          new URL(url);
+          return true;
+        } catch {
+          return false;
+        }
+      }
+
+      const urlsInvalidas = fotos.filter(url => typeof url !== 'string' || !esUrlValida(url));
+
+      if (urlsInvalidas.length > 0) {
+        throw new ValidationError("Todas las 'fotos' deben ser URLs válidas.");
+      }
+    }
   }
 
   toDTO(alojamiento) {
-      return {
-          id: alojamiento.id,
-          anfitrion: alojamiento.anfitrion,
-          nombre: alojamiento.nombre,
-          precioPorNoche: alojamiento.precioPorNoche,
-          cantHuespedesMax: alojamiento.cantHuespedesMax,
-          caracteristicas: alojamiento.caracteristicas,
-          direccion: alojamiento.direccion ? {
-              calle: alojamiento.direccion.calle,
-              altura: alojamiento.direccion.altura,
-              ciudad: alojamiento.direccion.ciudad ? {
-                  id: alojamiento.direccion.ciudad.id,
-                  nombre: alojamiento.direccion.ciudad.nombre,
-                  pais: alojamiento.direccion.ciudad.pais ? {
-                      id: alojamiento.direccion.ciudad.pais.id,
-                      nombre: alojamiento.direccion.ciudad.pais.nombre
-                  } : undefined
-              } : undefined,
-              lat: alojamiento.direccion.lat,
-              long: alojamiento.direccion.long
+    return {
+      id: alojamiento.id,
+      anfitrion: alojamiento.anfitrion,
+      nombre: alojamiento.nombre,
+      descripcion: alojamiento.descripcion,
+      horarioCheckIn: alojamiento.horarioCheckIn,
+      horarioCheckOut: alojamiento.horarioCheckOut,
+      precioPorNoche: alojamiento.precioPorNoche,
+      cantHuespedesMax: alojamiento.cantHuespedesMax,
+      caracteristicas: alojamiento.caracteristicas,
+      fotos: alojamiento.fotos,
+      direccion: alojamiento.direccion ? {
+        calle: alojamiento.direccion.calle,
+        altura: alojamiento.direccion.altura,
+        ciudad: alojamiento.direccion.ciudad ? {
+          id: alojamiento.direccion.ciudad.id,
+          nombre: alojamiento.direccion.ciudad.nombre,
+          pais: alojamiento.direccion.ciudad.pais ? {
+            id: alojamiento.direccion.ciudad.pais.id,
+            nombre: alojamiento.direccion.ciudad.pais.nombre
           } : undefined
-      };
+        } : undefined,
+        lat: alojamiento.direccion.lat,
+        long: alojamiento.direccion.long
+      } : undefined
+    };
   }
 
 }
