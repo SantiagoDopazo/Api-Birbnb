@@ -21,19 +21,10 @@ const AlojamientoRecordPage = () => {
     const alojamiento = state?.alojamiento;
     if (!alojamiento) return <div>No se encontró el alojamiento.</div>;
 
-    const imagenes = [
-        "https://picsum.photos/id/1005/800/400",
-        "https://picsum.photos/id/1011/800/400",
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1599423300746-b62533397364?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80",
-    ]
-
     return (
     <div>
-        <Row gutter={[32, 32]} wrap>
-            <Col xs={24} md={12}>
+        <Row gutter={[0, 32]} justify="center" align="top" wrap>
+            <Col xs={24} md={24} lg={12}>
                 <Carousel autoplay>
                     {alojamiento.fotos.map((img, idx) => (
                     <div key={idx}>
@@ -47,7 +38,7 @@ const AlojamientoRecordPage = () => {
                 </Carousel>
             </Col>
 
-            <Col xs={24} md={12}>
+            <Col xs={24} md={24} lg={12}>
                 <Card bordered={false}>
                 <Title level={2}>{alojamiento.nombre}</Title>
                 <Paragraph type="secondary">
