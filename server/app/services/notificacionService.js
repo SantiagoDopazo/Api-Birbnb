@@ -43,7 +43,7 @@ async marcarComoLeida(id) {
 
   async create(notificacion) {
       const { usuario, reserva } = notificacion;
-      this.validarUsuario(usuario);
+      await this.validarUsuario(usuario);
 
       if (!usuario || !reserva) {
           throw new ValidationError('Faltan campos requeridos o son inválidos');
