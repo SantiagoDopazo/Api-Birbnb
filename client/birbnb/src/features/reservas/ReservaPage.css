@@ -1,0 +1,10 @@
+.reserva-page-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.reserva-card-img {
+  height: 180px;
+  object-fit: cover;
+}
