@@ -9,14 +9,13 @@ export class Reserva {
     motivoCancelacion
     estadoReserva
 
-    constructor(fechaAlta, huespedReservador, cantHuespedes, alojamiento, rangoFechas, precioPorNoche, estadoReserva) {
-        this.fechaAlta = fechaAlta
+    constructor(huespedReservador, cantHuespedes, alojamiento, rangoFechas, precioPorNoche, estadoReserva) {
         this.huespedReservador = huespedReservador
         this.cantHuespedes = cantHuespedes
         this.alojamiento = alojamiento
         this.rangoFechas = rangoFechas
-        this.estadoReserva = estadoReserva
         this.precioPorNoche = precioPorNoche
+        this.estadoReserva = estadoReserva
     }
 
     actualizarEstado(estadoReserva)

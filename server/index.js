@@ -31,22 +31,25 @@ MongoDBClient.connect();
 
 const healthCheckController = new HealthCheckController();
 
-const reservaRepo = new ReservaRepository();
-const reservaService = new ReservaService(reservaRepo);
-const reservaController = new ReservaController(reservaService)
-
-
 const usuarioRepo = new UsuarioRepository();
 const usuarioService = new UsuarioService(usuarioRepo);
-const usuarioController = new UsuarioController(usuarioService);
-
-const notificacionRepo = new NotificacionRepository();
-const notificacionService = new NotificacionService(notificacionRepo, reservaRepo,usuarioRepo);
-const notificacionController = new NotificacionController(notificacionService);
 
 const alojamientoRepo = new AlojamientoRepository();
 const alojamientoService = new AlojamientoService(alojamientoRepo, usuarioRepo);
+
+const reservaRepo = new ReservaRepository();
+const notificacionRepo = new NotificacionRepository();
+
+const reservaService = new ReservaService(reservaRepo, usuarioService, alojamientoService);
+const notificacionService = new NotificacionService(notificacionRepo, reservaRepo, usuarioRepo);
+
+reservaService.notificacionService = notificacionService; // Se usa asi para evitar la dependencia circular
+
+const usuarioController = new UsuarioController(usuarioService);
 const alojamientoController = new AlojamientoController(alojamientoService);
+const reservaController = new ReservaController(reservaService);
+const notificacionController = new NotificacionController(notificacionService);
+
 
 server.setController(HealthCheckController, healthCheckController);
 server.setController(AlojamientoController, alojamientoController);

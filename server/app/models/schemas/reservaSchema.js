@@ -4,10 +4,6 @@ import { Reserva } from '../entities/Reserva.js';
 const { Schema } = mongoose;
 
 const reservaSchema = new mongoose.Schema({
-  fechaAlta: {
-    type: Date,
-    required: true
-  },
   huespedReservador: {
     type: Schema.Types.ObjectId,
     ref: 'Usuario',
