@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 export class UsuarioController {
     constructor(usuarioService) {
         this.usuarioService = usuarioService;
@@ -34,6 +35,27 @@ export class UsuarioController {
         try {
             await this.usuarioService.delete(req.params.id);
             res.status(204).send();
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async login(req, res, next) {
+        try {
+            const { email, password } = req.body;
+
+            const usuario = await this.usuarioService.usuarioRepository.findByEmail(email);
+            if (!usuario) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+            }
+
+            const passwordValida = await bcrypt.compare(password, usuario.password);
+            if (!passwordValida) {
+            return res.status(401).json({ message: 'Contraseña incorrecta' });
+            }
+
+            const usuarioDTO = this.usuarioService.toDTO(usuario);
+            res.json(usuarioDTO);
         } catch (error) {
             next(error);
         }
