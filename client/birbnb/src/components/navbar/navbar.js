@@ -1,13 +1,65 @@
 import './navbar.css';
-import React from 'react';
-import { Link } from "react-router-dom";
-import { NavLink } from 'react-router-dom';
-import { UserOutlined, BellOutlined } from '@ant-design/icons';
-import { Avatar, Space } from 'antd';
-
-
+import React, { useEffect, useState } from 'react';
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { UserOutlined, BellOutlined, LogoutOutlined, LoginOutlined } from '@ant-design/icons';
+import { Avatar, Space, Dropdown, Menu } from 'antd';
+import { message } from 'antd';
 
 const Navbar = () => {
+  const [usuario, setUsuario] = useState(undefined); // undefined = aún cargando
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const cargarUsuario = () => {
+      const userData = localStorage.getItem('usuario');
+      if (userData) setUsuario(JSON.parse(userData));
+      else setUsuario(null);
+    };
+
+    cargarUsuario();
+
+    window.addEventListener('usuarioCambiado', cargarUsuario);
+
+    return () => {
+      window.removeEventListener('usuarioCambiado', cargarUsuario);
+    };
+  }, []);
+
+  if (usuario === undefined) {
+    return null; // no renderizar nada hasta que se cargue
+  }
+
+  const cerrarSesion = () => {
+    localStorage.removeItem('usuario');
+    setUsuario(null);
+    message.info('Has cerrado sesión');
+    navigate('/login', { replace: true });
+  };
+
+  const menu = (
+    <Menu>
+      {usuario ? (
+        <>
+          <Menu.Item key="nombre" disabled>
+            {usuario.nombre}
+          </Menu.Item>
+          <Menu.Item key="cerrar" icon={<LogoutOutlined />} onClick={cerrarSesion}>
+            Cerrar sesión
+          </Menu.Item>
+        </>
+      ) : (
+        <>
+          <Menu.Item key="login" icon={<LoginOutlined />}>
+            <Link to="/login">Iniciar sesión</Link>
+          </Menu.Item>
+          <Menu.Item key="register" icon={<UserOutlined />}>
+            <Link to="/register">Registrarse</Link>
+          </Menu.Item>
+        </>
+      )}
+    </Menu>
+  );
+
   return (
     <header className="navbar-bg">
       <nav className="navbar">
@@ -15,7 +67,6 @@ const Navbar = () => {
           <Link to="/">
             <img src="images/logo.png" alt="Logo" width="100" className="logo" />
           </Link>
-
         </div>
 
         <div className="navbar-center">
@@ -54,10 +105,11 @@ const Navbar = () => {
           >
             <BellOutlined style={{ fontSize: 28 }} />
           </NavLink>
+
           <Space direction="vertical" size={16}>
-            <Space wrap size={16}>
-              <Avatar size="large" icon={<UserOutlined />} />
-            </Space>
+            <Dropdown overlay={menu} placement="bottomRight" arrow trigger={['click']}>
+              <Avatar size="large" icon={<UserOutlined />} style={{ cursor: 'pointer' }} />
+            </Dropdown>
           </Space>
         </div>
       </nav>

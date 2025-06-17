@@ -3,7 +3,9 @@ import { Carousel } from 'antd';
 import AboutUs from '../aboutUs/AboutUs';
 import ContactUs from '../contactUs/ContactUs';
 import './HomePage.css';
-
+import { message } from 'antd';
+import { useEffect } from 'react';
+import 'antd/dist/reset.css';
 
 const contentStyle = {
   height: '160px',

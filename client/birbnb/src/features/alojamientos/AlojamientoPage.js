@@ -1,6 +1,6 @@
 import './AlojamientoPage.css';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { getAlojamientos } from '../../lib/api';
 import { Input, Button, Checkbox, Filtros } from '../../components/filtros/Filtros';
 import Skeleton from '../../components/LoaderSkeleton';
 import AlojamientoCard from '../../components/alojamientoCard/AlojamientoCard';
@@ -35,7 +35,7 @@ const AlojamientoPage = () => {
   if (pais) params.set('pais', pais);
 
   try {
-    const res = await axios.get(`http://localhost:3000/alojamientos?${params.toString()}`);
+    const res = await getAlojamientos(params);
     setAlojamientos(res.data.data);
   } catch (err) {
     console.error(err);
