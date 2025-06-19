@@ -66,7 +66,7 @@ export class ReservaService {
     //SERVICES
 
     async findAllByUsuario(usuarioId) {
-        await this._validarUsuarioExiste(reserva.huespedReservador);
+        await this._validarUsuarioExiste(usuarioId);
         const reservas = await this.reservaRepository.findAllByUsuario(usuarioId);
         return reservas.map(this.toDTO);
     }
@@ -154,7 +154,7 @@ export class ReservaService {
             rangoFechas: reserva.rangoFechas,
             precioPorNoche: reserva.precioPorNoche,
             motivoCancelacion: reserva.motivoCancelacion,
-            estadoReserva: reserva.estado
+            estadoReserva: reserva.estadoReserva
         };
     }
 }

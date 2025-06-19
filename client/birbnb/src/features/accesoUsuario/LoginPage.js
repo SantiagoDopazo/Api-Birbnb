@@ -3,10 +3,19 @@ import { Form, Input, Button, Card, Typography, message } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { loginUsuario } from '../../lib/api';  
+import { useEffect } from 'react';
 
 const { Title } = Typography;
 
 const LoginPage = () => {
+
+  useEffect(() => {
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (usuario) {
+      navigate('/');
+    }
+  }, []);
+
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 

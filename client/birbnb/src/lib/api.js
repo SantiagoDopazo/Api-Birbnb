@@ -18,3 +18,14 @@ export const obtenerUsuarios = async () => {
   return axios.get(`${BASE_URL}/usuarios`);
 };
 
+export const crearReserva = async (reservaData) => {
+  return axios.post(`${BASE_URL}/reservas`, reservaData);
+};
+
+export const getReservasPorUsuario = async (usuarioId) => {
+  return axios.get(`${BASE_URL}/reservas/usuario/${usuarioId}`);
+};
+
+export const getAlojamientoPorId = async (alojamientoId) => {
+  return axios.get(`${BASE_URL}/alojamientos/${alojamientoId}`);
+};

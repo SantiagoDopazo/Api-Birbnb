@@ -3,7 +3,7 @@ import { Form, Input, Button, Card, Typography, Select, message } from 'antd';
 import { UserAddOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { crearUsuario } from '../../lib/api';
 import { useNavigate } from 'react-router-dom';
-import 'antd/dist/reset.css'; // para versiones antd v5+
+import 'antd/dist/reset.css'; 
 
 
 const { Title } = Typography;
