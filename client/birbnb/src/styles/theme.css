@@ -1,0 +1,296 @@
+/* Variables para tema claro */
+:root,
+.light-theme {
+  /* Colores primarios */
+  --color-primary: #007bff;
+  --color-primary-hover: #0056b3;
+  --color-primary-light: rgba(0, 123, 255, 0.1);
+  
+  /* Colores de fondo */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-overlay: rgba(255, 255, 255, 0.95);
+  
+  /* Colores de texto */
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-muted: #888888;
+  --text-inverse: #ffffff;
+  
+  /* Colores de borde */
+  --border-color: #e8e8e8;
+  --border-color-light: #f0f0f0;
+  --border-color-dark: #ddd;
+  
+  /* Sombras */
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-card-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+  --shadow-button: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-button-hover: 0 4px 8px rgba(0, 0, 0, 0.15);
+  
+  /* Colores de estado */
+  --color-success: #52c41a;
+  --color-warning: #faad14;
+  --color-error: #ff4d4f;
+  --color-info: #1890ff;
+}
+
+/* Variables para tema oscuro */
+.dark-theme {
+  /* Colores primarios */
+  --color-primary: #4a9eff;
+  --color-primary-hover: #66b3ff;
+  --color-primary-light: rgba(74, 158, 255, 0.15);
+  
+  /* Colores de fondo */
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #242424;
+  --bg-tertiary: #2a2a2a;
+  --bg-card: #2d2d30;
+  --bg-overlay: rgba(26, 26, 26, 0.95);
+  
+  /* Colores de texto */
+  --text-primary: #e0e0e0;
+  --text-secondary: #b0b0b0;
+  --text-muted: #888888;
+  --text-inverse: #1a1a1a;
+  
+  /* Colores de borde */
+  --border-color: #404040;
+  --border-color-light: #363636;
+  --border-color-dark: #4a4a4a;
+  
+  /* Sombras */
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 8px 25px rgba(0, 0, 0, 0.4);
+  --shadow-button: 0 2px 4px rgba(0, 0, 0, 0.2);
+  --shadow-button-hover: 0 4px 8px rgba(0, 0, 0, 0.3);
+  
+  /* Colores de estado */
+  --color-success: #73d13d;
+  --color-warning: #ffc53d;
+  --color-error: #ff7875;
+  --color-info: #40a9ff;
+}
+
+/* Aplicar colores globales */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html {
+  background-color: var(--bg-primary);
+  transition: background-color 0.3s ease;
+}
+
+#root {
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+  transition: background-color 0.3s ease;
+}
+
+/* Ant Design theming */
+.dark-theme .ant-layout {
+  background: var(--bg-primary);
+}
+
+.dark-theme .ant-layout-header {
+  background: var(--bg-primary);
+}
+
+.dark-theme .ant-layout-footer {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.dark-theme .ant-layout-content {
+  background: var(--bg-primary);
+}
+
+.dark-theme .ant-card {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.dark-theme .ant-card-head {
+  border-color: var(--border-color);
+  background: var(--bg-tertiary);
+}
+
+.dark-theme .ant-card-body {
+  color: var(--text-primary);
+}
+
+.dark-theme .ant-btn-primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.dark-theme .ant-btn-primary:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.dark-theme .ant-input {
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.dark-theme .ant-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.dark-theme .ant-select {
+  color: var(--text-primary);
+}
+
+.dark-theme .ant-select-selector {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .ant-select-dropdown {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+.dark-theme .ant-select-item {
+  color: var(--text-primary);
+}
+
+.dark-theme .ant-select-item:hover {
+  background: var(--bg-tertiary);
+}
+
+.dark-theme .ant-checkbox-wrapper {
+  color: var(--text-primary);
+}
+
+.dark-theme .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.dark-theme .ant-slider-track {
+  background-color: var(--color-primary);
+}
+
+.dark-theme .ant-slider-handle {
+  border-color: var(--color-primary);
+}
+
+.dark-theme .ant-tag {
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.dark-theme .ant-tag-blue {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.dark-theme .ant-empty-description {
+  color: var(--text-secondary);
+}
+
+.dark-theme .ant-spin-dot-item {
+  background-color: var(--color-primary);
+}
+
+.dark-theme .ant-message {
+  color: var(--text-primary);
+}
+
+.dark-theme .ant-typography {
+  color: var(--text-primary);
+}
+
+.dark-theme .ant-typography h1,
+.dark-theme .ant-typography h2,
+.dark-theme .ant-typography h3,
+.dark-theme .ant-typography h4,
+.dark-theme .ant-typography h5,
+.dark-theme .ant-typography h6 {
+  color: var(--text-primary);
+}
+
+.dark-theme .ant-typography-caption {
+  color: var(--text-secondary);
+}
+
+.dark-theme .ant-divider {
+  border-color: var(--border-color);
+}
+
+/* Botones específicos */
+.dark-theme .ant-btn {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.dark-theme .ant-btn:not(.ant-btn-primary):not(.ant-btn-link) {
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.dark-theme .ant-btn:not(.ant-btn-primary):not(.ant-btn-link):hover {
+  background: var(--bg-secondary);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.dark-theme .ant-btn-text {
+  color: var(--text-primary);
+}
+
+.dark-theme .ant-btn-text:hover {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.dark-theme .ant-btn-link {
+  color: var(--color-primary);
+}
+
+.dark-theme .ant-btn-link:hover {
+  color: var(--color-primary-hover);
+}
+
+/* Scrollbar para modo oscuro */
+.dark-theme ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark-theme ::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.dark-theme ::-webkit-scrollbar-thumb {
+  background: var(--border-color-dark);
+  border-radius: 4px;
+}
+
+.dark-theme ::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  body,
+  .ant-card,
+  .ant-btn {
+    transition: none !important;
+  }
+} 
