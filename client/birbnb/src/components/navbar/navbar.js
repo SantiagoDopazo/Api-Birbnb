@@ -4,6 +4,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { UserOutlined, BellOutlined, LogoutOutlined, LoginOutlined } from '@ant-design/icons';
 import { Avatar, Space, Dropdown, Menu } from 'antd';
 import { message } from 'antd';
+import ThemeToggle from '../ThemeToggle/ThemeToggle';
 
 const Navbar = () => {
   const [usuario, setUsuario] = useState(undefined); // undefined = aún cargando
@@ -26,7 +27,7 @@ const Navbar = () => {
   }, []);
 
   if (usuario === undefined) {
-    return null; // no renderizar nada hasta que se cargue
+    return null;
   }
 
   const cerrarSesion = () => {
@@ -105,6 +106,10 @@ const Navbar = () => {
           >
             <BellOutlined style={{ fontSize: 28 }} />
           </NavLink>
+
+          <div style={{ marginRight: 16 }}>
+            <ThemeToggle size="large" />
+          </div>
 
           <Space direction="vertical" size={16}>
             <Dropdown overlay={menu} placement="bottomRight" arrow trigger={['click']}>
