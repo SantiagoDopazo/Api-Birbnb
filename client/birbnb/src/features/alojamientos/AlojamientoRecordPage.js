@@ -102,7 +102,7 @@ const AlojamientoRecordPage = () => {
 
   const handleCerrarModal = () => {
     setReservaExitosa(false);
-    navigate('/reservas'); // Ir a ver mis reservas
+    navigate('/reservas'); 
   };
 
   const precioTotal = calcularPrecioTotal();

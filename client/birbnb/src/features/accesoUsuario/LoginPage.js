@@ -26,7 +26,7 @@ const LoginPage = () => {
         email: values.email,
         password: values.password
       });
-
+      console.log('usuario: ', JSON.stringify(usuario))
       localStorage.setItem('usuario', JSON.stringify(usuario));
       message.success('Inicio de sesión exitoso');
       window.dispatchEvent(new Event('usuarioCambiado'));

@@ -39,6 +39,10 @@ const AlojamientoPage = () => {
     if (filtros.ciudad && filtros.ciudad.trim()) params.set('ciudad', filtros.ciudad.trim());
     if (filtros.pais && filtros.pais.trim()) params.set('pais', filtros.pais.trim());
 
+    if (filtros.rangoFechas && filtros.rangoFechas.length === 2) {
+      params.set('fechaDesde', filtros.rangoFechas[0]);
+      params.set('fechaHasta', filtros.rangoFechas[1]);
+    }
 
     setFiltrosAplicados(filtros);
 
@@ -114,7 +118,7 @@ const AlojamientoPage = () => {
       </button>
 
       <div id="filtros-contenedor" role="region" aria-label="Filtros de búsqueda">
-        {mostrarFiltros && <Filtros onBuscar={buscar} />}
+        {mostrarFiltros && <Filtros onBuscar={buscar} alojamientos={alojamientos} />}
       </div>
 
       {cargando && (

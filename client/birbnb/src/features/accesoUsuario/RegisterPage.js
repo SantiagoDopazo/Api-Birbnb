@@ -4,6 +4,7 @@ import { UserAddOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { crearUsuario } from '../../lib/api';
 import { useNavigate } from 'react-router-dom';
 import 'antd/dist/reset.css'; 
+import { loginUsuario } from '../../lib/api';
 
 
 const { Title } = Typography;
@@ -23,7 +24,11 @@ const RegisterPage = () => {
         password: values.password
       };
       await crearUsuario(nuevoUsuario);
-      localStorage.setItem('usuario', JSON.stringify(nuevoUsuario));
+      const { data: usuario } = await loginUsuario({
+        email: values.email,
+        password: values.password
+      });
+      localStorage.setItem('usuario', JSON.stringify(usuario));
       window.dispatchEvent(new Event('usuarioCambiado'));
       message.success('Registro exitoso. Redirigiendo...');
       setTimeout(() => navigate('/'), 1000);
