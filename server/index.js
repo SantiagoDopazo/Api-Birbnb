@@ -25,6 +25,9 @@ import { UsuarioController } from "./app/controllers/usuarioController.js";
 
 import { HealthCheckController } from "./app/controllers/healthCheckController.js";
 
+import { eventManager } from "./app/events/EventManager.js";
+import { NotificacionListener } from "./app/listeners/NotificacionListener.js";
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -52,7 +55,8 @@ const notificacionRepo = new NotificacionRepository();
 const reservaService = new ReservaService(reservaRepo, usuarioService, alojamientoService);
 const notificacionService = new NotificacionService(notificacionRepo, reservaRepo, usuarioRepo);
 
-reservaService.notificacionService = notificacionService; // Se usa asi para evitar la dependencia circular
+const notificacionListener = new NotificacionListener(notificacionService, alojamientoService);
+notificacionListener.register(eventManager);
 
 const usuarioController = new UsuarioController(usuarioService);
 const alojamientoController = new AlojamientoController(alojamientoService);

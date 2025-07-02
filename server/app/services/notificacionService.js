@@ -11,10 +11,8 @@ export class NotificacionService {
   }
   
   async findAll(filters = {}) { 
-
-    if({usuarioId} = filters) { //chequear esto
-      const {usuarioId} = filters
-      await this.validarUsuario(usuarioId);
+    if(filters.usuarioId) {
+      await this.validarUsuario(filters.usuarioId);
     }
 
     const notificaciones = await this.notificacionRepository.findAll(filters);
@@ -60,7 +58,6 @@ async marcarComoLeida(id) {
       const estado = FactoryEstadoReserva.crearDesdeNombre(reservaCompleta.estadoReserva);
 
       const reservaNueva = new Reserva(
-        reservaCompleta.fechaAlta,
         reservaCompleta.huespedReservador,
         reservaCompleta.cantHuespedes,
         reservaCompleta.alojamiento,

@@ -40,6 +40,6 @@ export class EstadoCancelada {
     }
 
     destinatario(reserva) {
-        return reserva.huespedReservador
+        return reserva.alojamiento.anfitrion
     }
 }
