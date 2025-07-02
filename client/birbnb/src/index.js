@@ -3,8 +3,10 @@ import { unstableSetRender } from 'antd';
 import { createRoot } from 'react-dom/client';
 import AppRoutes from './router/routes';
 import { ConfigProvider } from 'antd';
+import { ThemeProvider } from './contexts/ThemeContext';
 import 'antd/dist/reset.css';
 import './styles/globals.css';
+import './styles/theme.css';
 
 unstableSetRender((node, container) => {
   container._reactRoot ||= createRoot(container);
@@ -19,7 +21,9 @@ unstableSetRender((node, container) => {
 
 const root = createRoot(document.getElementById('root'));
 root.render(
-  <ConfigProvider>
-    <AppRoutes />
-  </ConfigProvider>
+  <ThemeProvider>
+    <ConfigProvider>
+      <AppRoutes />
+    </ConfigProvider>
+  </ThemeProvider>
 );

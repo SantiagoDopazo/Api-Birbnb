@@ -1,10 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Row, Col, Tag, Typography, Divider, message, Spin } from 'antd';
-import { getReservasPorUsuario } from '../../lib/api'; 
+import { Card, Row, Col, Tag, Typography, Divider, message, Spin, Button, Modal, Empty } from 'antd';
+import { getReservasPorUsuario, cancelarReserva } from '../../lib/api'; 
 import { getAlojamientoPorId } from '../../lib/api';
+import { 
+  CalendarOutlined, 
+  UserOutlined, 
+  DollarOutlined, 
+  EnvironmentOutlined,
+  ExclamationCircleOutlined,
+  CloseCircleOutlined 
+} from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
+import './ReservaPage.css';
 
 const { Title, Paragraph, Text } = Typography;
+const { confirm } = Modal;
 
 const estadoColor = {
   CONFIRMADA: 'green',
@@ -12,11 +23,18 @@ const estadoColor = {
   CANCELADA: 'red',
 };
 
+const estadoTexto = {
+  CONFIRMADA: 'Confirmada',
+  PENDIENTE: 'Pendiente',
+  CANCELADA: 'Cancelada',
+};
+
 const ReservaPage = () => {
   const [reservas, setReservas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cancelando, setCancelando] = useState(null);
 
-  useEffect(() => {
+  const cargarReservas = async () => {
     const usuario = JSON.parse(localStorage.getItem('usuario'));
     if (!usuario) {
       message.error('Debes estar logueado para ver tus reservas');
@@ -24,90 +42,220 @@ const ReservaPage = () => {
       return;
     }
 
-    getReservasPorUsuario(usuario.id)
-      .then(async (res) => {
-        const reservasData = res.data;
+    try {
+      const res = await getReservasPorUsuario(usuario.id);
+      const reservasData = res.data;
 
-        const reservasConAlojamiento = await Promise.all(
-          reservasData.map(async (reserva) => {
+      const reservasConAlojamiento = await Promise.all(
+        reservasData.map(async (reserva) => {
+          try {
             const resAloj = await getAlojamientoPorId(reserva.alojamiento);
             return {
               ...reserva,
               alojamiento: resAloj.data,
             };
-          })
-        );
+          } catch (error) {
+            console.error(`Error al cargar alojamiento ${reserva.alojamiento}:`, error);
+            return {
+              ...reserva,
+              alojamiento: { nombre: 'Alojamiento no disponible' },
+            };
+          }
+        })
+      );
 
-        setReservas(reservasConAlojamiento);
-      })
-      .catch((error) => {
-        console.error(error);
-        message.error('Error al cargar tus reservas');
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      reservasConAlojamiento.sort((a, b) => new Date(b.fechaAlta) - new Date(a.fechaAlta));
+      setReservas(reservasConAlojamiento);
+    } catch (error) {
+      console.error(error);
+      message.error('Error al cargar tus reservas');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    cargarReservas();
   }, []);
+
+  const handleCancelarReserva = (reserva) => {
+    confirm({
+      title: '¿Estás seguro de cancelar esta reserva?',
+      icon: <ExclamationCircleOutlined />,
+      content: (
+        <div>
+          <p>Vas a cancelar la reserva para <strong>{reserva.alojamiento.nombre}</strong></p>
+          <p>Fechas: {dayjs(reserva.rangoFechas?.desde).format('DD/MM/YYYY')} - {dayjs(reserva.rangoFechas?.hasta).format('DD/MM/YYYY')}</p>
+          <p style={{ color: '#ff4d4f' }}>Esta acción no se puede deshacer.</p>
+        </div>
+      ),
+      okText: 'Sí, cancelar',
+      okType: 'danger',
+      cancelText: 'No, mantener reserva',
+      onOk: async () => {
+        setCancelando(reserva.id);
+        try {
+          await cancelarReserva(reserva.id);
+          message.success('Reserva cancelada exitosamente');
+          cargarReservas();
+        } catch (error) {
+          console.error(error);
+          message.error('Error al cancelar la reserva');
+        } finally {
+          setCancelando(null);
+        }
+      },
+    });
+  };
+
+  const calcularNoches = (rangoFechas) => {
+    if (!rangoFechas?.desde || !rangoFechas?.hasta) return 0;
+    const inicio = dayjs(rangoFechas.desde);
+    const fin = dayjs(rangoFechas.hasta);
+    return fin.diff(inicio, 'day');
+  };
+
+  const calcularPrecioTotal = (reserva) => {
+    const noches = calcularNoches(reserva.rangoFechas);
+    return noches * (reserva.precioPorNoche || 0);
+  };
+
+  const puedesCancelar = (reserva) => {
+    return reserva.estadoReserva === 'PENDIENTE' || reserva.estadoReserva === 'CONFIRMADA';
+  };
 
   if (loading) {
     return (
-      <div style={{textAlign: 'center', padding: '2rem'}}>
+      <div className="loading-container">
         <Spin size="large" />
+        <p style={{ marginTop: '1rem' }}>Cargando tus reservas...</p>
       </div>
     );
   }
 
   if (!reservas.length) {
     return (
-      <div style={{textAlign: 'center', padding: '2rem'}}>
-        <Title level={3}>No tenés reservas aún</Title>
+      <div className="reserva-page-container">
+        <Title level={2}>Mis Reservas</Title>
+        <Empty
+          description="No tenés reservas aún"
+          image={<CalendarOutlined style={{ fontSize: 64, color: '#ccc' }} />}
+        >
+          <Link to="/busquedaAlojamientos">
+            <Button type="primary">Explorar Alojamientos</Button>
+          </Link>
+        </Empty>
       </div>
     );
   }
 
   return (
-    <div className="reserva-page-container" style={{ padding: '2rem' }}>
-      <Title level={2}>Mis Reservas</Title>
+    <div className="reserva-page-container">
+      <div className="reserva-header">
+        <Title level={2}>Mis Reservas</Title>
+        <Text type="secondary">
+          Tenés {reservas.length} reserva{reservas.length !== 1 ? 's' : ''}
+        </Text>
+      </div>
+      
       <Divider />
+      
       <Row gutter={[24, 24]}>
         {reservas.map((reserva) => {
-        const alojamiento = reserva.alojamiento || {};
-        const fotos = Array.isArray(alojamiento.fotos) ? alojamiento.fotos : [];
-        const foto = fotos.length > 0 ? fotos[0] : '/images/default-alojamiento.jpg';
-        const nombreAlojamiento = alojamiento.nombre || 'Nombre no disponible';
+          const alojamiento = reserva.alojamiento || {};
+          const fotos = Array.isArray(alojamiento.fotos) ? alojamiento.fotos : [];
+          const foto = fotos.length > 0 ? fotos[0] : '/images/default-alojamiento.jpg';
+          const nombreAlojamiento = alojamiento.nombre || 'Nombre no disponible';
+          const noches = calcularNoches(reserva.rangoFechas);
+          const precioTotal = calcularPrecioTotal(reserva);
 
-        return (
-          <Col xs={24} md={12} key={reserva.id}>
-            <Card
-              hoverable
-              cover={
-                <img
-                  alt={nombreAlojamiento}
-                  src={foto}
-                  style={{ height: 200, objectFit: 'cover' }}
-                />
-              }
-            >
-              <Title level={4}>{nombreAlojamiento}</Title>
-              <Paragraph type="secondary">
-                {alojamiento.direccion?.ciudad?.nombre || ''}, {alojamiento.direccion?.ciudad?.pais?.nombre || ''}
-              </Paragraph>
-              <Paragraph>
-                <Text strong>Fechas:</Text> {dayjs(reserva.rangoFechas?.desde).format('DD/MM/YYYY')} a {dayjs(reserva.rangoFechas?.hasta).format('DD/MM/YYYY')}
-              </Paragraph>
-              <Paragraph>
-                <Text strong>Huéspedes:</Text> {reserva.cantHuespedes}
-              </Paragraph>
-              <Paragraph>
-                <Text strong>Precio por noche:</Text> ${reserva.precioPorNoche}
-              </Paragraph>
-              <Tag color={estadoColor[reserva.estadoReserva] || 'default'}>
-                {reserva.estadoReserva || 'SIN ESTADO'}
-              </Tag>
-            </Card>
-          </Col>
-        );
-      })}
+          return (
+            <Col xs={24} lg={12} key={reserva.id}>
+              <Card
+                className={`reserva-card ${reserva.estadoReserva?.toLowerCase()}`}
+                hoverable
+                cover={
+                  <img
+                    alt={nombreAlojamiento}
+                    src={foto}
+                    className="reserva-image"
+                  />
+                }
+                actions={[
+                  <Link to="/busquedaAlojamientos" key="buscar">
+                    <Button type="text">Ver más alojamientos</Button>
+                  </Link>,
+                  ...(puedesCancelar(reserva) ? [
+                    <Button 
+                      key="cancelar"
+                      type="text" 
+                      danger
+                      icon={<CloseCircleOutlined />}
+                      loading={cancelando === reserva.id}
+                      onClick={() => handleCancelarReserva(reserva)}
+                    >
+                      Cancelar
+                    </Button>
+                  ] : [])
+                ]}
+              >
+                <div className="reserva-content">
+                  <div className="reserva-header-card">
+                    <Title level={4} className="reserva-title">{nombreAlojamiento}</Title>
+                    <Tag color={estadoColor[reserva.estadoReserva] || 'default'}>
+                      {estadoTexto[reserva.estadoReserva] || reserva.estadoReserva}
+                    </Tag>
+                  </div>
+
+                  <Paragraph type="secondary" className="reserva-location">
+                    <EnvironmentOutlined /> {alojamiento.direccion?.ciudad?.nombre || ''}, {alojamiento.direccion?.ciudad?.pais?.nombre || ''}
+                  </Paragraph>
+
+                  <div className="reserva-details">
+                    <div className="reserva-detail-item">
+                      <CalendarOutlined />
+                      <div>
+                        <Text strong>Fechas:</Text>
+                        <br />
+                        <Text>{dayjs(reserva.rangoFechas?.desde).format('DD/MM/YYYY')} - {dayjs(reserva.rangoFechas?.hasta).format('DD/MM/YYYY')}</Text>
+                        <br />
+                        <Text type="secondary">{noches} noche{noches !== 1 ? 's' : ''}</Text>
+                      </div>
+                    </div>
+
+                    <div className="reserva-detail-item">
+                      <UserOutlined />
+                      <div>
+                        <Text strong>Huéspedes:</Text>
+                        <br />
+                        <Text>{reserva.cantHuespedes} persona{reserva.cantHuespedes !== 1 ? 's' : ''}</Text>
+                      </div>
+                    </div>
+
+                    <div className="reserva-detail-item">
+                      <DollarOutlined />
+                      <div>
+                        <Text strong>Precio:</Text>
+                        <br />
+                        <Text>${reserva.precioPorNoche} por noche</Text>
+                        <br />
+                        <Text strong>Total: ${precioTotal}</Text>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Divider style={{ margin: '12px 0' }} />
+                  
+                  <div className="reserva-meta">
+                    <Text type="secondary" style={{ fontSize: '12px' }}>
+                      Reservado el {dayjs(reserva.fechaAlta).format('DD/MM/YYYY')}
+                    </Text>
+                  </div>
+                </div>
+              </Card>
+            </Col>
+          );
+        })}
       </Row>
     </div>
   );

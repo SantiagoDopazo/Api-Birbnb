@@ -1,4 +1,35 @@
 .aboutUs {
-  background-color: #f8f8f8;
+  background-color: var(--bg-secondary);
   padding: 4rem 2rem;
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.aboutUs h2 {
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.aboutUs p {
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+.aboutUs .ant-card {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.aboutUs .ant-card-body {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.aboutUs .ant-typography {
+  color: var(--text-primary);
+}
+
+.aboutUs .ant-divider {
+  border-color: var(--border-color);
 }

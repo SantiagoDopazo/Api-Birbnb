@@ -1,107 +1,200 @@
 import './AlojamientoPage.css';
 import React, { useEffect, useState } from 'react';
 import { getAlojamientos } from '../../lib/api';
-import { Input, Button, Checkbox, Filtros } from '../../components/filtros/Filtros';
+import { Input, Checkbox, Filtros } from '../../components/filtros/Filtros';
 import Skeleton from '../../components/LoaderSkeleton';
 import AlojamientoCard from '../../components/alojamientoCard/AlojamientoCard';
-import { LoadingOutlined } from '@ant-design/icons';
-import { Flex, Spin } from 'antd';
-
+import { LoadingOutlined, FilterOutlined, HomeOutlined } from '@ant-design/icons';
+import { Flex, Spin, message, Empty, Button } from 'antd';
 
 const AlojamientoPage = () => {
   const [alojamientos, setAlojamientos] = useState([]);
   const [cargando, setCargando] = useState(false);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
+  const [filtrosAplicados, setFiltrosAplicados] = useState({});
+  const [error, setError] = useState(null);
+  const [primeraCarga, setPrimeraCarga] = useState(true);
 
-  const buscar = async ({ ciudad, pais, precioMin, precioMax, huespedes, caracteristicas } = {}) => {
-  setCargando(true);
-  const params = new URLSearchParams({ limit: 20, page: 1 });
-
-  if (precioMin !== undefined) {
-    params.set('precioGte', precioMin);
-    params.set('precioGt', precioMin - 1);
-  }
-
-  if (precioMax !== undefined) {
-    params.set('precioLte', precioMax);
-    params.set('precioLt', precioMax + 1);
-  }
-
-  if (huespedes) params.set('cantHuespedes', huespedes);
-  if (caracteristicas && caracteristicas.length) {
-    params.set('caracteristicas', caracteristicas.join(','));
-  }
-  if (ciudad) params.set('ciudad', ciudad);
-  if (pais) params.set('pais', pais);
-
-  try {
-    const res = await getAlojamientos(params);
-    setAlojamientos(res.data.data);
-  } catch (err) {
-    console.error(err);
-  } finally {
-    setCargando(false);
-  }
-};
+  const buscar = async (filtros = {}) => {
+    setCargando(true);
+    setError(null);
+    
+    const params = new URLSearchParams({ limit: 20, page: 1 });
 
 
-useEffect(() => {
-  buscar({});
-}, []);
+    if (filtros.precioMin !== undefined && filtros.precioMin > 0) {
+      params.set('precioGte', filtros.precioMin);
+      params.set('precioGt', filtros.precioMin - 1);
+    }
+
+    if (filtros.precioMax !== undefined && filtros.precioMax < 200) {
+      params.set('precioLte', filtros.precioMax);
+      params.set('precioLt', filtros.precioMax + 1);
+    }
+
+    if (filtros.huespedes) params.set('cantHuespedes', filtros.huespedes);
+    if (filtros.caracteristicas && filtros.caracteristicas.length) {
+      params.set('caracteristicas', filtros.caracteristicas.join(','));
+    }
+    if (filtros.ciudad && filtros.ciudad.trim()) params.set('ciudad', filtros.ciudad.trim());
+    if (filtros.pais && filtros.pais.trim()) params.set('pais', filtros.pais.trim());
+
+
+    setFiltrosAplicados(filtros);
+
+    try {
+      const res = await getAlojamientos(params);
+      setAlojamientos(res.data.data || []);
+      
+
+      if (!primeraCarga && res.data.data && res.data.data.length > 0) {
+        message.success(`Se encontraron ${res.data.data.length} alojamientos`);
+      }
+      
+
+      if (res.data.data && res.data.data.length === 0 && Object.keys(filtros).some(key => filtros[key])) {
+        message.info('No se encontraron alojamientos con los filtros aplicados. Intenta ajustar tu búsqueda.');
+      }
+      
+    } catch (err) {
+      console.error('Error al buscar alojamientos:', err);
+      setError('Error al cargar los alojamientos. Por favor, intenta nuevamente.');
+      message.error('Error al cargar los alojamientos');
+      setAlojamientos([]);
+    } finally {
+      setCargando(false);
+      if (primeraCarga) setPrimeraCarga(false);
+    }
+  };
+
+  const toggleFiltros = () => {
+    setMostrarFiltros(!mostrarFiltros);
+  };
+
+  useEffect(() => {
+    buscar({});
+  }, []);
+
+  const tieneFiltrosAplicados = Object.keys(filtrosAplicados).some(key => {
+    const valor = filtrosAplicados[key];
+    return valor && (Array.isArray(valor) ? valor.length > 0 : valor.toString().trim() !== '');
+  });
 
   return (
     <div className='contenedor-principal'>
       <h1 className='texto'>
-        Buscar alojamientos
+        Descubre tu próximo destino
       </h1>
 
       <button
         className="botonFiltros"
-        onClick={() => setMostrarFiltros(!mostrarFiltros)}
+        onClick={toggleFiltros}
+        aria-expanded={mostrarFiltros}
+        aria-controls="filtros-contenedor"
+        aria-label={mostrarFiltros ? "Ocultar filtros de búsqueda" : "Mostrar filtros de búsqueda"}
       >
-      <span className="icono">
-        {/* Ícono sliders */}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          fill="currentColor"
-          viewBox="0 0 16 16"
-        >
-          <path d="M11 3a1 1 0 1 1 2 0h1.5a.5.5 0 0 1 0 1H13a1 1 0 0 1-2 0H1.5a.5.5 0 0 1 0-1H11zM5 7a1 1 0 1 1 2 0h7.5a.5.5 0 0 1 0 1H7a1 1 0 0 1-2 0H1.5a.5.5 0 0 1 0-1H5zm6 4a1 1 0 1 1 2 0h1.5a.5.5 0 0 1 0 1H13a1 1 0 0 1-2 0H1.5a.5.5 0 0 1 0-1H11z" />
-        </svg>
-      </span>
-      <span className="texto">Filters</span>
-      <span className="flecha">
-        {/* Flecha abajo */}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="12"
-          height="12"
-          fill="currentColor"
-          viewBox="0 0 16 16"
-        >
-          <path d="M1.5 5.5l6 6 6-6" stroke="currentColor" strokeWidth="1.5" fill="none" />
-        </svg>
-      </span>
-     </button>
+        <span className="icono" aria-hidden="true">
+          <FilterOutlined />
+        </span>
+        <span className="boton-texto">
+          Filtros {tieneFiltrosAplicados && '(aplicados)'}
+        </span>
+        <span className="flecha" aria-hidden="true">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="12"
+            height="12"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+            style={{ transform: mostrarFiltros ? 'rotate(180deg)' : 'rotate(0deg)' }}
+          >
+            <path d="M1.5 5.5l6 6 6-6" stroke="currentColor" strokeWidth="1.5" fill="none" />
+          </svg>
+        </span>
+      </button>
+
+      <div id="filtros-contenedor" role="region" aria-label="Filtros de búsqueda">
+        {mostrarFiltros && <Filtros onBuscar={buscar} />}
+      </div>
+
+      {cargando && (
+        <div className="spinner-container" role="status" aria-live="polite">
+          <Spin 
+            indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />}
+            tip="Buscando alojamientos..."
+          />
+        </div>
+      )}
+
+      {error && !cargando && (
+        <div className="estado-vacio" role="alert">
+          <h3>Oops! Algo salió mal</h3>
+          <p>{error}</p>
+          <Button 
+            type="primary" 
+            onClick={() => buscar(filtrosAplicados)}
+            style={{ marginTop: '1rem' }}
+          >
+            Intentar nuevamente
+          </Button>
+        </div>
+      )}
 
 
-      {mostrarFiltros && <Filtros onBuscar={buscar} />}
-
-        {cargando ? (
-          <div className="spinner-container">
-            <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
-          </div>
-        ) : (
-          <div className="grid-alojamientos">
-            {alojamientos.map((a) => (
-              <AlojamientoCard key={a.id} alojamiento={a} />
-            ))}
-          </div>
-        )}
+      {!cargando && !error && (
+        <>
+          {alojamientos.length > 0 ? (
+            <>
+              <div style={{ margin: '1rem 0', textAlign: 'center', color: '#666' }}>
+                <p>
+                  {alojamientos.length} alojamiento{alojamientos.length !== 1 ? 's' : ''} encontrado{alojamientos.length !== 1 ? 's' : ''}
+                  {tieneFiltrosAplicados && ' con los filtros aplicados'}
+                </p>
+              </div>
+              <div className="grid-alojamientos" role="main" aria-label="Lista de alojamientos">
+                {alojamientos.map((alojamiento, index) => (
+                  <AlojamientoCard 
+                    key={alojamiento.id} 
+                    alojamiento={alojamiento}
+                    aria-label={`Alojamiento ${index + 1} de ${alojamientos.length}: ${alojamiento.nombre}`}
+                  />
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="estado-vacio">
+              <Empty
+                image={<HomeOutlined style={{ fontSize: 64, color: '#ccc' }} />}
+                description={
+                  <div>
+                    <h3>No se encontraron alojamientos</h3>
+                    <p>
+                      {tieneFiltrosAplicados 
+                        ? 'Intenta ajustar los filtros de búsqueda o explorar diferentes opciones.'
+                        : 'Parece que no hay alojamientos disponibles en este momento.'
+                      }
+                    </p>
+                  </div>
+                }
+              >
+                {tieneFiltrosAplicados && (
+                  <Button 
+                    type="primary" 
+                    onClick={() => {
+                      setFiltrosAplicados({});
+                      buscar({});
+                    }}
+                  >
+                    Ver todos los alojamientos
+                  </Button>
+                )}
+              </Empty>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
-}
+};
 
 export default AlojamientoPage;
