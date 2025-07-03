@@ -153,6 +153,8 @@ const AlojamientoRecordPage = () => {
                   <Text strong>Seleccioná las fechas:</Text>
                   <RangePicker 
                     onChange={handleChange} 
+                    placeholder={['Fecha desde', 'Fecha hasta']}
+                    format="DD/MM/YYYY"
                     style={{ width: '100%', marginTop: '0.5rem' }}
                     disabledDate={(current) => current && current < dayjs().startOf('day')}
                   />

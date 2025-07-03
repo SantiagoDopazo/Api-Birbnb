@@ -9,7 +9,6 @@ import AlojamientoRecordPage from '../features/alojamientos/AlojamientoRecordPag
 import LoginPage from '../features/accesoUsuario/LoginPage';
 import RegisterPage from '../features/accesoUsuario/RegisterPage';
 import ScrollToTop from '../components/scrollTop';
-import TestMessage from '../features/test';
 
 const AppRoutes = () => (
   <Router>
@@ -23,7 +22,6 @@ const AppRoutes = () => (
         <Route path="/notificaciones" element={<NotificacionPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/test" element={<TestMessage />} />
       </Route>
     </Routes>
   </Router>

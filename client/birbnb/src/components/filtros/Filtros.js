@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './Filtros.css';
 import { DatePicker, Slider } from 'antd';
+import dayjs from 'dayjs';
 
 // Componentes reutilizables
 export const Input = ({ label, ...props }) => (
@@ -105,7 +106,11 @@ export const Filtros = ({ onBuscar, alojamientos }) => {
           <RangePicker
             value={rangoFechas}
             onChange={(dates) => setRangoFechas(dates)}
-            format="YYYY-MM-DD"
+            format="DD/MM/YYYY"
+            placeholder={['Fecha desde', 'Fecha hasta']}
+            disabledDate={(current) => {
+              return current && current < dayjs().startOf('day');
+            }}
           />
         </div>
         <Input label="Huéspedes" type="number" value={huespedes} onChange={e => setHuespedes(Number(e.target.value))} />
