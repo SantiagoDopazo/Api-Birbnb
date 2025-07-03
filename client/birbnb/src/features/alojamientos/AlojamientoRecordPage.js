@@ -26,10 +26,9 @@ const AlojamientoRecordPage = () => {
 
   if (!alojamiento) return <div>No se encontró el alojamiento.</div>;
 
-  const handleChange = (dates, dateStrings) => {
-    setRangoFechas(dateStrings);
+  const handleChange = (dates) => {
+    setRangoFechas(dates); 
   };
-
   const calcularPrecioTotal = () => {
     if (!rangoFechas || rangoFechas.length < 2) return 0;
     
@@ -80,8 +79,8 @@ const AlojamientoRecordPage = () => {
       cantHuespedes,
       alojamiento: alojamiento.id,
       rangoFechas: {
-        desde: new Date(rangoFechas[0]).toISOString(),
-        hasta: new Date(rangoFechas[1]).toISOString()
+        desde: rangoFechas[0].toDate().toISOString(),
+        hasta: rangoFechas[1].toDate().toISOString()
       },
       precioPorNoche: alojamiento.precioPorNoche,
       estadoReserva: 'PENDIENTE'

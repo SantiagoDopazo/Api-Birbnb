@@ -2,19 +2,24 @@ import './navbar.css';
 import React, { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { UserOutlined, BellOutlined, LogoutOutlined, LoginOutlined } from '@ant-design/icons';
-import { Avatar, Space, Dropdown, Menu } from 'antd';
-import { message } from 'antd';
+import { Avatar, Space, Dropdown, Menu, message, Badge } from 'antd';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
+import { getNotificacionesPorUsuario } from '../../lib/api';
 
 const Navbar = () => {
   const [usuario, setUsuario] = useState(undefined); // undefined = aún cargando
+  const [notificacionesNoLeidas, setNotificacionesNoLeidas] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
     const cargarUsuario = () => {
       const userData = localStorage.getItem('usuario');
-      if (userData) setUsuario(JSON.parse(userData));
-      else setUsuario(null);
+      if (userData) {
+        const parsedUser = JSON.parse(userData);
+        setUsuario(parsedUser);
+      } else {
+        setUsuario(null);
+      }
     };
 
     cargarUsuario();
@@ -26,8 +31,33 @@ const Navbar = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const cargarNotificaciones = async (usuarioId) => {
+      try {
+        const res = await getNotificacionesPorUsuario(usuarioId, false); // false = solo no leídas
+        const total = res.data?.length || 0;
+        setNotificacionesNoLeidas(total);
+      } catch (err) {
+        console.error('Error cargando notificaciones:', err);
+        setNotificacionesNoLeidas(0);
+      }
+    };
+
+    if (usuario?.id) {
+      cargarNotificaciones(usuario.id);
+
+      const actualizarNotificaciones = () => cargarNotificaciones(usuario.id);
+      window.addEventListener('notificacionesActualizadas', actualizarNotificaciones);
+
+      return () => {
+        window.removeEventListener('notificacionesActualizadas', actualizarNotificaciones);
+      };
+    }
+  }, [usuario]);
+
+
   if (usuario === undefined) {
-    return null;
+    return null; // todavía cargando
   }
 
   const cerrarSesion = () => {
@@ -73,9 +103,7 @@ const Navbar = () => {
         <div className="navbar-center">
           <NavLink
             to="/busquedaAlojamientos"
-            className={({ isActive }) =>
-              isActive ? 'nav-link activo' : 'nav-link'
-            }
+            className={({ isActive }) => isActive ? 'nav-link activo' : 'nav-link'}
           >
             <div className="nav-item">
               <img src="images/casa.png" alt="Alojamientos" className="icono-nav" />
@@ -85,9 +113,7 @@ const Navbar = () => {
 
           <NavLink
             to="/reservas"
-            className={({ isActive }) =>
-              isActive ? 'nav-link activo' : 'nav-link'
-            }
+            className={({ isActive }) => isActive ? 'nav-link activo' : 'nav-link'}
           >
             <div className="nav-item">
               <img src="images/casa.png" alt="Reservas" className="icono-nav" />
@@ -99,12 +125,19 @@ const Navbar = () => {
         <div className="navbar-right">
           <NavLink
             to="/notificaciones"
-            className={({ isActive }) =>
-              isActive ? 'nav-link activo' : 'nav-link'
-            }
+            className={({ isActive }) => isActive ? 'nav-link activo' : 'nav-link'}
             style={{ marginRight: 16 }}
           >
-            <BellOutlined style={{ fontSize: 28 }} />
+            <Badge 
+              count={notificacionesNoLeidas > 0 ? notificacionesNoLeidas : 0}
+              overflowCount={99}
+              offset={[-2, 2]} // Ajuste más fino para que quede cerca del icono
+              style={{ backgroundColor: '#f5222d' }}
+            >
+              <span style={{ display: 'inline-block', position: 'relative' }}>
+                <BellOutlined style={{ fontSize: 24 }} />
+              </span>
+            </Badge>
           </NavLink>
 
           <div style={{ marginRight: 16 }}>

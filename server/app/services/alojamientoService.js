@@ -300,3 +300,4 @@ export class AlojamientoService {
 function estaDefinido(valor) {
   return valor !== undefined && valor !== null && valor !== '';
 }
+

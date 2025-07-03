@@ -49,6 +49,18 @@ export const cancelarReserva = async (reservaId) => {
 };
 
 // ===== NOTIFICACIONES =====
-export const getNotificacionesPorUsuario = async (usuarioId) => {
-  return axios.get(`${BASE_URL}/notificaciones/usuario/${usuarioId}`);
+export const getNotificacionesPorUsuario = async (usuarioId, leida = undefined) => {
+  const params = new URLSearchParams({ usuarioId });
+
+  if (leida !== undefined) {
+    params.append('leida', leida);
+  }
+
+  return axios.get(`${BASE_URL}/notificaciones?${params.toString()}`);
+};
+
+export const marcarNotificacionComoLeida = (id) => {
+  return axios.patch(`${BASE_URL}/notificaciones/${id}`, {
+    leida: true
+  });
 };
