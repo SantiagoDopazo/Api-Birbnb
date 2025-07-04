@@ -93,7 +93,8 @@ const AlojamientoRecordPage = () => {
 
     } catch (error) {
       console.error(error);
-      message.error('Error al crear la reserva. Intentá nuevamente.');
+      const errorMessage = error.response?.data?.message || 'Error al crear la reserva. Intentá nuevamente.';
+      message.error(errorMessage);
     } finally {
       setCargando(false);
     }

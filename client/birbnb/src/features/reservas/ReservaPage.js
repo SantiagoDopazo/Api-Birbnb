@@ -9,6 +9,7 @@ import {
   DollarOutlined,
   EnvironmentOutlined,
   CloseCircleOutlined,
+  InfoCircleOutlined,
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -241,6 +242,12 @@ const ReservaPage = () => {
                     <Text type="secondary" style={{ fontSize: '12px' }}>
                       Reservado el {dayjs(reserva.fechaAlta).format('DD/MM/YYYY')}
                     </Text>
+                    {reserva.estadoReserva === 'CANCELADA' && reserva.motivoCancelacion && (
+                      <div className="reserva-motivo">
+                        <InfoCircleOutlined />
+                        <span>Motivo de cancelación: {reserva.motivoCancelacion}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </Card>

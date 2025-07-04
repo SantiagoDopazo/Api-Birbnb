@@ -79,6 +79,7 @@ async marcarComoLeida(id) {
 
       reservaNueva.nombreHuesped = usuarioHuesped.nombre;
       reservaNueva.nombreAlojamiento = alojamientoCompleto.nombre;
+      reservaNueva.motivoCancelacion = reservaCompleta.motivoCancelacion;
 
       const factoryNotificacion = new FactoryNotificacion();
       const nuevo = factoryNotificacion.crearSegunReserva(reservaNueva, reservaId);
