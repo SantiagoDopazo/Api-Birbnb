@@ -9,8 +9,8 @@ describe('AlojamientoController', () => {
 
   beforeEach(() => {
     alojamientoService = {
-      findAll: jest.fn(),
       findById: jest.fn(),
+      findAll: jest.fn(),
       create: jest.fn(),
       delete: jest.fn(),
       update: jest.fn()
@@ -41,20 +41,11 @@ describe('AlojamientoController', () => {
 
     await controller.findAll(req, res, next);
 
-    expect(alojamientoService.findAll).toHaveBeenCalledWith({
-      precioGt: undefined,
-      precioLt: undefined,
-      precioGte: undefined,
-      precioLte: undefined,
-      cantHuespedes: undefined,
-      caracteristicas: undefined,
-      ciudad: 'Buenos Aires',
-      pais: undefined,
-      lat: undefined,
-      long: undefined,
-      page: 1,
-      limit: undefined
-    });
+expect(alojamientoService.findAll).toHaveBeenCalledWith(
+  { ciudad: 'Buenos Aires' },  // filters
+  1,                           // pageNum
+  10                           // limitNum
+);
     expect(res.json).toHaveBeenCalledWith(mockAlojamientos);
   });
 
