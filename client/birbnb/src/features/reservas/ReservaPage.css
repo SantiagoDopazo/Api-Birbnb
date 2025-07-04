@@ -50,7 +50,8 @@
 
 .reserva-card.cancelada {
   border-left: 4px solid var(--color-error);
-  opacity: 0.8;
+  background: var(--bg-card);
+  filter: grayscale(20%);
 }
 
 .reserva-image {
@@ -159,16 +160,30 @@
   position: relative;
 }
 
-.reserva-card.cancelada .reserva-content::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--bg-overlay);
-  z-index: 1;
-  pointer-events: none;
+.reserva-card.cancelada .reserva-title {
+  color: var(--text-secondary) !important;
+  text-decoration: line-through;
+  text-decoration-color: var(--color-error);
+  text-decoration-thickness: 1px;
+}
+
+.reserva-card.cancelada .reserva-motivo {
+  background: #fff2f0;
+  border: 1px solid #ffccc7;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #cf1322;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dark-theme .reserva-card.cancelada .reserva-motivo {
+  background: #2a1215;
+  border-color: #541014;
+  color: #ff7875;
 }
 
 @media (max-width: 768px) {
