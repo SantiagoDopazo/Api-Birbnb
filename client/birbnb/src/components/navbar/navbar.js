@@ -96,7 +96,7 @@ const Navbar = () => {
       <nav className="navbar">
         <div className="navbar-left">
           <Link to="/">
-            <img src="images/logo.png" alt="Logo" width="100" className="logo" />
+            <img src="images/logo2.png" alt="Logo" width="100" className="logo" />
           </Link>
         </div>
 
@@ -106,7 +106,7 @@ const Navbar = () => {
             className={({ isActive }) => isActive ? 'nav-link activo' : 'nav-link'}
           >
             <div className="nav-item">
-              <img src="images/casa.png" alt="Alojamientos" className="icono-nav" />
+              <img src="images/casa-Photoroom.png" alt="Alojamientos" className="icono-nav" />
               <span className="nav-text">Alojamientos</span>
             </div>
           </NavLink>
@@ -116,7 +116,7 @@ const Navbar = () => {
             className={({ isActive }) => isActive ? 'nav-link activo' : 'nav-link'}
           >
             <div className="nav-item">
-              <img src="images/casa.png" alt="Reservas" className="icono-nav" />
+              <img src="images/casa-Photoroom.png" alt="Reservas" className="icono-nav" />
               <span className="nav-text">Reservas</span>
             </div>
           </NavLink>
@@ -127,7 +127,7 @@ const Navbar = () => {
               className={({ isActive }) => isActive ? 'nav-link activo' : 'nav-link'}
             >
               <div className="nav-item">
-                <img src="images/casa.png" alt="Mis Alojamientos" className="icono-nav" />
+                <img src="images/casa-Photoroom.png" alt="Mis Alojamientos" className="icono-nav" />
                 <span className="nav-text">Mis Alojamientos</span>
               </div>
             </NavLink>

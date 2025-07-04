@@ -113,7 +113,7 @@ export const Filtros = ({ onBuscar, alojamientos }) => {
             }}
           />
         </div>
-        <Input label="Huéspedes" type="number" value={huespedes} onChange={e => setHuespedes(Number(e.target.value))} />
+        <Input label="Huéspedes" type="number" min="0" value={huespedes} onChange={e => setHuespedes(Number(e.target.value))} />
         <div className="caracteristicas">
           {Object.keys(caracteristicas).map((key) => (
             <Checkbox

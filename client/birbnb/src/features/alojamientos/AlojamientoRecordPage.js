@@ -156,7 +156,7 @@ const AlojamientoRecordPage = () => {
                     placeholder={['Fecha desde', 'Fecha hasta']}
                     format="DD/MM/YYYY"
                     style={{ width: '100%', marginTop: '0.5rem' }}
-                    disabledDate={(current) => current && current < dayjs().startOf('day')}
+                    disabledDate={(current) => current && current <= dayjs().startOf('day')}
                   />
                 </div>
 
