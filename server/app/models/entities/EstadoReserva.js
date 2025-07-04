@@ -1,7 +1,7 @@
 export class EstadoPendiente {
     mensaje(reserva) {
-        const huesped = reserva.huespedReservador;
-        const alojamiento = reserva.alojamiento;
+        const huesped = reserva.nombreHuesped || reserva.huespedReservador;
+        const alojamiento = reserva.nombreAlojamiento || reserva.alojamiento;
 
         const desde = reserva.rangoFechas.desde;
         const hasta = reserva.rangoFechas.hasta;

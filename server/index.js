@@ -53,7 +53,7 @@ const reservaRepo = new ReservaRepository();
 const notificacionRepo = new NotificacionRepository();
 
 const reservaService = new ReservaService(reservaRepo, usuarioService, alojamientoService);
-const notificacionService = new NotificacionService(notificacionRepo, reservaRepo, usuarioRepo);
+const notificacionService = new NotificacionService(notificacionRepo, reservaRepo, usuarioRepo, alojamientoRepo);
 
 const notificacionListener = new NotificacionListener(notificacionService, alojamientoService);
 notificacionListener.register(eventManager);
