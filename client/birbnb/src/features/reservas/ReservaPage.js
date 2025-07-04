@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Row, Col, Tag, Typography, Divider, message, Spin, Button, Modal, Empty } from 'antd';
-import { getReservasPorUsuario, cancelarReserva } from '../../lib/api'; 
-import { getAlojamientoPorId } from '../../lib/api';
-import { 
-  CalendarOutlined, 
-  UserOutlined, 
-  DollarOutlined, 
+import {
+  Card, Row, Col, Tag, Typography, Divider, message, Spin, Button, Modal, Input, Empty
+} from 'antd';
+import { getReservasPorUsuario, getAlojamientoPorId, rechazarReserva } from '../../lib/api';
+import {
+  CalendarOutlined,
+  UserOutlined,
+  DollarOutlined,
   EnvironmentOutlined,
-  ExclamationCircleOutlined,
-  CloseCircleOutlined 
+  CloseCircleOutlined,
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 import './ReservaPage.css';
 
 const { Title, Paragraph, Text } = Typography;
-const { confirm } = Modal;
 
 const estadoColor = {
   CONFIRMADA: 'green',
@@ -50,24 +49,22 @@ const ReservaPage = () => {
         reservasData.map(async (reserva) => {
           try {
             const resAloj = await getAlojamientoPorId(reserva.alojamiento);
-            return {
-              ...reserva,
-              alojamiento: resAloj.data,
-            };
+            return { ...reserva, alojamiento: resAloj.data };
           } catch (error) {
-            console.error(`Error al cargar alojamiento ${reserva.alojamiento}:`, error);
-            return {
-              ...reserva,
-              alojamiento: { nombre: 'Alojamiento no disponible' },
-            };
+            return { ...reserva, alojamiento: { nombre: 'Alojamiento no disponible' } };
           }
         })
       );
 
-      reservasConAlojamiento.sort((a, b) => new Date(b.fechaAlta) - new Date(a.fechaAlta));
+      reservasConAlojamiento.sort((a, b) => {
+        if (a.estadoReserva === 'CANCELADA' && b.estadoReserva !== 'CANCELADA') return 1;
+        if (a.estadoReserva !== 'CANCELADA' && b.estadoReserva === 'CANCELADA') return -1;
+
+        return new Date(b.fechaAlta) - new Date(a.fechaAlta);
+      });
+
       setReservas(reservasConAlojamiento);
     } catch (error) {
-      console.error(error);
       message.error('Error al cargar tus reservas');
     } finally {
       setLoading(false);
@@ -79,27 +76,40 @@ const ReservaPage = () => {
   }, []);
 
   const handleCancelarReserva = (reserva) => {
-    confirm({
+    let motivo = '';
+
+    Modal.confirm({
       title: '¿Estás seguro de cancelar esta reserva?',
-      icon: <ExclamationCircleOutlined />,
+      icon: <CloseCircleOutlined style={{ color: '#ff4d4f' }} />,
       content: (
         <div>
           <p>Vas a cancelar la reserva para <strong>{reserva.alojamiento.nombre}</strong></p>
           <p>Fechas: {dayjs(reserva.rangoFechas?.desde).format('DD/MM/YYYY')} - {dayjs(reserva.rangoFechas?.hasta).format('DD/MM/YYYY')}</p>
           <p style={{ color: '#ff4d4f' }}>Esta acción no se puede deshacer.</p>
+          <Input.TextArea
+            placeholder="Motivo de cancelación"
+            rows={3}
+            onChange={(e) => motivo = e.target.value}
+          />
         </div>
       ),
       okText: 'Sí, cancelar',
       okType: 'danger',
       cancelText: 'No, mantener reserva',
-      onOk: async () => {
+      async onOk() {
+        if (!motivo.trim()) {
+          message.warning('Debe ingresar un motivo de cancelación');
+          return Promise.reject(); // previene cierre del modal
+        }
         setCancelando(reserva.id);
         try {
-          await cancelarReserva(reserva.id);
+          await rechazarReserva({
+            ...reserva,
+            motivoCancelacion: motivo,
+          });
           message.success('Reserva cancelada exitosamente');
           cargarReservas();
-        } catch (error) {
-          console.error(error);
+        } catch (err) {
           message.error('Error al cancelar la reserva');
         } finally {
           setCancelando(null);
@@ -110,9 +120,7 @@ const ReservaPage = () => {
 
   const calcularNoches = (rangoFechas) => {
     if (!rangoFechas?.desde || !rangoFechas?.hasta) return 0;
-    const inicio = dayjs(rangoFechas.desde);
-    const fin = dayjs(rangoFechas.hasta);
-    return fin.diff(inicio, 'day');
+    return dayjs(rangoFechas.hasta).diff(dayjs(rangoFechas.desde), 'day');
   };
 
   const calcularPrecioTotal = (reserva) => {
@@ -120,9 +128,8 @@ const ReservaPage = () => {
     return noches * (reserva.precioPorNoche || 0);
   };
 
-  const puedesCancelar = (reserva) => {
-    return reserva.estadoReserva === 'PENDIENTE' || reserva.estadoReserva === 'CONFIRMADA';
-  };
+  const puedesCancelar = (reserva) =>
+    reserva.estadoReserva === 'PENDIENTE' || reserva.estadoReserva === 'CONFIRMADA';
 
   if (loading) {
     return (
@@ -153,19 +160,16 @@ const ReservaPage = () => {
     <div className="reserva-page-container">
       <div className="reserva-header">
         <Title level={2}>Mis Reservas</Title>
-        <Text type="secondary">
-          Tenés {reservas.length} reserva{reservas.length !== 1 ? 's' : ''}
-        </Text>
+        <Text type="secondary">Tenés {reservas.length} reserva{reservas.length !== 1 ? 's' : ''}</Text>
       </div>
-      
+
       <Divider />
-      
+
       <Row gutter={[24, 24]}>
         {reservas.map((reserva) => {
           const alojamiento = reserva.alojamiento || {};
           const fotos = Array.isArray(alojamiento.fotos) ? alojamiento.fotos : [];
           const foto = fotos.length > 0 ? fotos[0] : '/images/default-alojamiento.jpg';
-          const nombreAlojamiento = alojamiento.nombre || 'Nombre no disponible';
           const noches = calcularNoches(reserva.rangoFechas);
           const precioTotal = calcularPrecioTotal(reserva);
 
@@ -174,21 +178,15 @@ const ReservaPage = () => {
               <Card
                 className={`reserva-card ${reserva.estadoReserva?.toLowerCase()}`}
                 hoverable
-                cover={
-                  <img
-                    alt={nombreAlojamiento}
-                    src={foto}
-                    className="reserva-image"
-                  />
-                }
+                cover={<img alt={alojamiento.nombre} src={foto} className="reserva-image" />}
                 actions={[
                   <Link to="/busquedaAlojamientos" key="buscar">
                     <Button type="text">Ver más alojamientos</Button>
                   </Link>,
                   ...(puedesCancelar(reserva) ? [
-                    <Button 
+                    <Button
                       key="cancelar"
-                      type="text" 
+                      type="text"
                       danger
                       icon={<CloseCircleOutlined />}
                       loading={cancelando === reserva.id}
@@ -201,7 +199,7 @@ const ReservaPage = () => {
               >
                 <div className="reserva-content">
                   <div className="reserva-header-card">
-                    <Title level={4} className="reserva-title">{nombreAlojamiento}</Title>
+                    <Title level={4} className="reserva-title">{alojamiento.nombre}</Title>
                     <Tag color={estadoColor[reserva.estadoReserva] || 'default'}>
                       {estadoTexto[reserva.estadoReserva] || reserva.estadoReserva}
                     </Tag>
@@ -215,37 +213,30 @@ const ReservaPage = () => {
                     <div className="reserva-detail-item">
                       <CalendarOutlined />
                       <div>
-                        <Text strong>Fechas:</Text>
-                        <br />
-                        <Text>{dayjs(reserva.rangoFechas?.desde).format('DD/MM/YYYY')} - {dayjs(reserva.rangoFechas?.hasta).format('DD/MM/YYYY')}</Text>
-                        <br />
+                        <Text strong>Fechas:</Text><br />
+                        <Text>{dayjs(reserva.rangoFechas?.desde).format('DD/MM/YYYY')} - {dayjs(reserva.rangoFechas?.hasta).format('DD/MM/YYYY')}</Text><br />
                         <Text type="secondary">{noches} noche{noches !== 1 ? 's' : ''}</Text>
                       </div>
                     </div>
-
                     <div className="reserva-detail-item">
                       <UserOutlined />
                       <div>
-                        <Text strong>Huéspedes:</Text>
-                        <br />
+                        <Text strong>Huéspedes:</Text><br />
                         <Text>{reserva.cantHuespedes} persona{reserva.cantHuespedes !== 1 ? 's' : ''}</Text>
                       </div>
                     </div>
-
                     <div className="reserva-detail-item">
                       <DollarOutlined />
                       <div>
-                        <Text strong>Precio:</Text>
-                        <br />
-                        <Text>${reserva.precioPorNoche} por noche</Text>
-                        <br />
+                        <Text strong>Precio:</Text><br />
+                        <Text>${reserva.precioPorNoche} por noche</Text><br />
                         <Text strong>Total: ${precioTotal}</Text>
                       </div>
                     </div>
                   </div>
 
                   <Divider style={{ margin: '12px 0' }} />
-                  
+
                   <div className="reserva-meta">
                     <Text type="secondary" style={{ fontSize: '12px' }}>
                       Reservado el {dayjs(reserva.fechaAlta).format('DD/MM/YYYY')}

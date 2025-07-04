@@ -62,6 +62,7 @@ const Navbar = () => {
   const cerrarSesion = () => {
     localStorage.removeItem('usuario');
     setUsuario(null);
+    setNotificacionesNoLeidas(0); // 🔧 resetear badge
     message.info('Has cerrado sesión');
     navigate('/login', { replace: true });
   };

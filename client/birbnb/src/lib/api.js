@@ -91,6 +91,8 @@ export const rechazarReserva = async (reserva) => {
     alojamiento: typeof reserva.alojamiento === 'object' ? reserva.alojamiento.id : reserva.alojamiento,
     rangoFechas: reserva.rangoFechas,
     precioPorNoche: reserva.precioPorNoche,
+    motivoCancelacion: reserva.motivoCancelacion,
     estadoReserva: 'CANCELADA',
   });
 };
+
