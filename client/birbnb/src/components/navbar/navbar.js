@@ -55,7 +55,6 @@ const Navbar = () => {
     }
   }, [usuario]);
 
-
   if (usuario === undefined) {
     return null; // todavía cargando
   }
@@ -120,6 +119,18 @@ const Navbar = () => {
               <span className="nav-text">Reservas</span>
             </div>
           </NavLink>
+
+          {usuario?.tipo === 'ANFITRION' && (
+            <NavLink
+              to="/mis-alojamientos"
+              className={({ isActive }) => isActive ? 'nav-link activo' : 'nav-link'}
+            >
+              <div className="nav-item">
+                <img src="images/casa.png" alt="Mis Alojamientos" className="icono-nav" />
+                <span className="nav-text">Mis Alojamientos</span>
+              </div>
+            </NavLink>
+          )}
         </div>
 
         <div className="navbar-right">
@@ -131,7 +142,7 @@ const Navbar = () => {
             <Badge 
               count={notificacionesNoLeidas > 0 ? notificacionesNoLeidas : 0}
               overflowCount={99}
-              offset={[-2, 2]} // Ajuste más fino para que quede cerca del icono
+              offset={[-2, 2]}
               style={{ backgroundColor: '#f5222d' }}
             >
               <span style={{ display: 'inline-block', position: 'relative' }}>

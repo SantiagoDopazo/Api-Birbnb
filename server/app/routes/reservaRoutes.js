@@ -15,4 +15,8 @@ export function registerReservaRoutes(app, getController){
     app.delete("/reservas/:id", (req, res, next) =>
         getController(ReservaController).delete(req, res, next)
     );
+
+    app.get("/reservas/anfitrion/:anfitrionId", (req, res, next) =>
+        getController(ReservaController).findByAnfitrion(req, res, next)
+    );
 }

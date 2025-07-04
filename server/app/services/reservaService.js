@@ -133,6 +133,22 @@ export class ReservaService {
         return reservas.map(this.toDTO);
     }
 
+    async findAllByAnfitrion(anfitrionId) {
+        const alojamientoIds = await this.alojamientoService.findIdsByAnfitrion(anfitrionId);
+
+        if (alojamientoIds.length === 0) {
+            return [];
+        }
+
+        const reservas = await this.reservaRepository.findByAlojamientoIds(alojamientoIds);
+
+        if (!Array.isArray(reservas)) {
+            return [];
+        }
+
+        return reservas.map(reserva => this.toDTO(reserva));
+    }
+
     async create(reserva) {
         await this._validarReserva(reserva);
         

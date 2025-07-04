@@ -132,7 +132,16 @@ export class AlojamientoService {
     }
   }
 
+  async findIdsByAnfitrion(anfitrionId) {
 
+      const alojamientos = await this.alojamientoRepository.findIdsByAnfitrion(anfitrionId);
+
+
+      const alojamientoIds = alojamientos.map(a => a._id.toString());
+
+
+      return alojamientoIds;
+  }
 
   async validarAlojamiento(alojamiento) {
     if (!alojamiento) throw new ValidationError("El objeto alojamiento es requerido.");

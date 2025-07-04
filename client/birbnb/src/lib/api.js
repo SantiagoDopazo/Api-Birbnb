@@ -24,6 +24,8 @@ export const obtenerUsuarios = async () => {
   return axios.get(`${BASE_URL}/usuarios`);
 };
 
+export const getUsuarioPorId = (id) => axios.get(`${BASE_URL}/usuarios/${id}`);
+
 // ===== RESERVAS =====
 export const crearReserva = async (reservaData) => {
   return axios.post(`${BASE_URL}/reservas`, reservaData);
@@ -62,5 +64,33 @@ export const getNotificacionesPorUsuario = async (usuarioId, leida = undefined) 
 export const marcarNotificacionComoLeida = (id) => {
   return axios.patch(`${BASE_URL}/notificaciones/${id}`, {
     leida: true
+  });
+};
+
+
+export const getReservasDeAnfitrion = (anfitrionId) =>
+  axios.get(`${BASE_URL}/reservas/anfitrion/${anfitrionId}`);
+
+export const confirmarReserva = async (reserva) => {
+  return axios.put(`${BASE_URL}/reservas/${reserva.id}`, {
+    fechaAlta: reserva.fechaAlta,
+    huespedReservador: typeof reserva.huespedReservador === 'object' ? reserva.huespedReservador.id : reserva.huespedReservador,
+    cantHuespedes: reserva.cantHuespedes,
+    alojamiento: typeof reserva.alojamiento === 'object' ? reserva.alojamiento.id : reserva.alojamiento,
+    rangoFechas: reserva.rangoFechas,
+    precioPorNoche: reserva.precioPorNoche,
+    estadoReserva: 'CONFIRMADA',
+  });
+};
+
+export const rechazarReserva = async (reserva) => {
+  return axios.put(`${BASE_URL}/reservas/${reserva.id}`, {
+    fechaAlta: reserva.fechaAlta,
+    huespedReservador: typeof reserva.huespedReservador === 'object' ? reserva.huespedReservador.id : reserva.huespedReservador,
+    cantHuespedes: reserva.cantHuespedes,
+    alojamiento: typeof reserva.alojamiento === 'object' ? reserva.alojamiento.id : reserva.alojamiento,
+    rangoFechas: reserva.rangoFechas,
+    precioPorNoche: reserva.precioPorNoche,
+    estadoReserva: 'CANCELADA',
   });
 };

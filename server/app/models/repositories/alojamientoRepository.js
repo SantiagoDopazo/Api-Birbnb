@@ -74,6 +74,10 @@ export class AlojamientoRepository {
     async findByName(nombre) {
         return await this.model.findOne({ nombre });
     }
+
+    async findIdsByAnfitrion(anfitrionId) {
+      return await this.model.find({ anfitrion: anfitrionId }).select('_id');
+    }
   
     async save(alojamiento) {
 

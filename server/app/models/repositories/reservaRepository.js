@@ -23,15 +23,19 @@ export class ReservaRepository {
     }
 
     async update(id, data) {
-    return await this.model.findByIdAndUpdate(
-        id,
-        data,
-        { new: true, runValidators: true }
-    );
-}
+        return await this.model.findByIdAndUpdate(
+            id,
+            data,
+            { new: true, runValidators: true }
+        );
+    }
 
     async findById(id) {
         return await this.model.findById(id);
+    }
+
+    async findByAlojamientoIds(alojamientoIds) {
+        return await this.model.find({ alojamiento: { $in: alojamientoIds } });
     }
 
     async deleteById(id) {
