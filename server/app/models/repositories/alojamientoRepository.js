@@ -50,7 +50,6 @@ export class AlojamientoRepository {
     if (filters.fechaDesde && filters.fechaHasta) {
       const fechaDesde = new Date(filters.fechaDesde);
       const fechaHasta = new Date(filters.fechaHasta);
-      console.log('✅ Filtro fechas aplicado:', { fechaDesde, fechaHasta });
 
       const reservasSolapadas = await this.reservaModel.find({
         'rangoFechas.desde': { $lt: fechaHasta },
@@ -59,21 +58,14 @@ export class AlojamientoRepository {
       }).select('alojamiento');
 
       const idsOcupados = reservasSolapadas.map(r => r.alojamiento.toString());
-      console.log('🚫 IDs ocupados en fechas:', idsOcupados);
 
       if (idsOcupados.length > 0) {
         query._id = { $nin: idsOcupados };
       }
     }
 
-    // DEBUG: Log de la consulta final
-    console.log('📋 CONSULTA MONGODB FINAL:', JSON.stringify(query, null, 2));
-
     const total = await this.model.countDocuments(query);
     const results = await this.model.find(query).skip(skip).limit(limit);
-
-    console.log('📊 RESULTADOS:', { total, resultados: results.length });
-    console.log('🏠 ALOJAMIENTOS ENCONTRADOS:', results.map(r => ({ id: r._id, nombre: r.nombre, caracteristicas: r.caracteristicas })));
 
     return { results, total };
   }
