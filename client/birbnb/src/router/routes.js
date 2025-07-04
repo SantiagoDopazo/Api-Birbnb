@@ -6,9 +6,14 @@ import ReservaPage from '../features/reservas/ReservaPage';
 import NotificacionPage from '../features/notificaciones/NotificacionPage';
 import Layout from '../features/layout/layout'
 import AlojamientoRecordPage from '../features/alojamientos/AlojamientoRecordPage';
+import LoginPage from '../features/accesoUsuario/LoginPage';
+import RegisterPage from '../features/accesoUsuario/RegisterPage';
+import ScrollToTop from '../components/scrollTop';
+import MisAlojamientosPage from '../features/alojamientos/MisAlojamientosPaje';
 
 const AppRoutes = () => (
   <Router>
+    <ScrollToTop />
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<HomePage />} />
@@ -16,6 +21,9 @@ const AppRoutes = () => (
         <Route path="/alojamientoRecord" element={<AlojamientoRecordPage />} />
         <Route path="/reservas" element={<ReservaPage />} />
         <Route path="/notificaciones" element={<NotificacionPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/mis-alojamientos" element={<MisAlojamientosPage />} />
       </Route>
     </Routes>
   </Router>

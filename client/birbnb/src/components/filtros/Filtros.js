@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './Filtros.css';
-import { Slider } from 'antd';
+import { DatePicker, Slider } from 'antd';
+import dayjs from 'dayjs';
 
 // Componentes reutilizables
 export const Input = ({ label, ...props }) => (
@@ -24,7 +25,10 @@ export const Checkbox = ({ label, ...props }) => (
 );
 
 // Componente principal Filtros
-export const Filtros = ({ onBuscar }) => {
+export const Filtros = ({ onBuscar, alojamientos }) => {
+  const { RangePicker } = DatePicker;
+
+  const [rangoFechas, setRangoFechas] = useState([]);
   const [ciudad, setCiudad] = useState('');
   const [pais, setPais] = useState('');
   const [precioMin, setPrecioMin] = useState();
@@ -38,10 +42,23 @@ export const Filtros = ({ onBuscar }) => {
     'Mascotas permitidas': false,
     'Estacionamiento': false
   });
+  
+  const precios = alojamientos.map(a => a.precioPorNoche);
+  const precioMinimo = precios.length ? Math.min(...precios) : 0;
+  const precioMaximo = precios.length ? Math.max(...precios) : 200;
 
   const manejarBusqueda = () => {
     const seleccionadas = Object.keys(caracteristicas).filter(k => caracteristicas[k]);
-    onBuscar({ ciudad, pais, precioMin, precioMax, huespedes, caracteristicas: seleccionadas });
+
+    let fechasSeleccionadas;
+    if (rangoFechas && rangoFechas.length === 2) {
+      fechasSeleccionadas = [
+        rangoFechas[0].format('YYYY-MM-DD'),
+        rangoFechas[1].format('YYYY-MM-DD')
+      ];
+    }
+
+    onBuscar({ ciudad, pais, precioMin, precioMax, huespedes, caracteristicas: seleccionadas, rangoFechas: fechasSeleccionadas });
   };
 
   const eliminarFiltros = () => {
@@ -58,7 +75,9 @@ export const Filtros = ({ onBuscar }) => {
     'Mascotas permitidas': false,
     'Estacionamiento': false
     });
+    setRangoFechas([]);
   };
+
 
   return (
     <>
@@ -69,17 +88,32 @@ export const Filtros = ({ onBuscar }) => {
           <label>Rango de precios</label>
           <Slider
             range
-            min={0}
-            max={200}
+            min={precioMinimo}
+            max={precioMaximo}
             step={1}
-            value={[precioMin || 0, precioMax || 200]}
+            value={[
+              precioMin !== undefined ? precioMin : precioMinimo,
+              precioMax !== undefined ? precioMax : precioMaximo
+            ]}
             onChange={([min, max]) => {
               setPrecioMin(min);
               setPrecioMax(max);
             }}
           />
         </div>
-        <Input label="Huéspedes" type="number" value={huespedes} onChange={e => setHuespedes(Number(e.target.value))} />
+        <div className="form-group">
+          <label>Disponibilidad (rango de fechas)</label>
+          <RangePicker
+            value={rangoFechas}
+            onChange={(dates) => setRangoFechas(dates)}
+            format="DD/MM/YYYY"
+            placeholder={['Fecha desde', 'Fecha hasta']}
+            disabledDate={(current) => {
+              return current && current < dayjs().startOf('day');
+            }}
+          />
+        </div>
+        <Input label="Huéspedes" type="number" min="0" value={huespedes} onChange={e => setHuespedes(Number(e.target.value))} />
         <div className="caracteristicas">
           {Object.keys(caracteristicas).map((key) => (
             <Checkbox

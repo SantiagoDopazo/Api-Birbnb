@@ -12,6 +12,15 @@ export class ReservaController {
         }
     }
 
+    async findByAnfitrion(req, res, next) {
+        try {
+            const reservas = await this.reservaService.findAllByAnfitrion(req.params.anfitrionId);
+            res.json(reservas);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async create(req, res, next){
         try {
             const nuevaReserva = await this.reservaService.create(req.body);

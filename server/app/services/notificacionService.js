@@ -4,17 +4,16 @@ import { FactoryEstadoReserva } from "../models/entities/FactoryEstadoReserva.js
 import { Reserva } from "../models/entities/Reserva.js"
 
 export class NotificacionService {
-  constructor(notificacionRepository, reservaRepository, usuarioRepository) {
+  constructor(notificacionRepository, reservaRepository, usuarioRepository, alojamientoRepository) {
     this.notificacionRepository = notificacionRepository;
     this.reservaRepository = reservaRepository;
     this.usuarioRepository = usuarioRepository;
+    this.alojamientoRepository = alojamientoRepository;
   }
   
   async findAll(filters = {}) { 
-
-    if({usuarioId} = filters) { //chequear esto
-      const {usuarioId} = filters
-      await this.validarUsuario(usuarioId);
+    if(filters.usuarioId) {
+      await this.validarUsuario(filters.usuarioId);
     }
 
     const notificaciones = await this.notificacionRepository.findAll(filters);
@@ -57,10 +56,19 @@ async marcarComoLeida(id) {
           throw new NotFoundError('Reserva no encontrada');
       }
 
+      const usuarioHuesped = await this.usuarioRepository.findById(reservaCompleta.huespedReservador);
+      if (!usuarioHuesped) {
+          throw new NotFoundError('Usuario huésped no encontrado');
+      }
+
+      const alojamientoCompleto = await this.alojamientoRepository.findById(reservaCompleta.alojamiento);
+      if (!alojamientoCompleto) {
+          throw new NotFoundError('Alojamiento no encontrado');
+      }
+
       const estado = FactoryEstadoReserva.crearDesdeNombre(reservaCompleta.estadoReserva);
 
       const reservaNueva = new Reserva(
-        reservaCompleta.fechaAlta,
         reservaCompleta.huespedReservador,
         reservaCompleta.cantHuespedes,
         reservaCompleta.alojamiento,
@@ -68,6 +76,10 @@ async marcarComoLeida(id) {
         reservaCompleta.precioPorNoche,
         estado
       );
+
+      reservaNueva.nombreHuesped = usuarioHuesped.nombre;
+      reservaNueva.nombreAlojamiento = alojamientoCompleto.nombre;
+      reservaNueva.motivoCancelacion = reservaCompleta.motivoCancelacion;
 
       const factoryNotificacion = new FactoryNotificacion();
       const nuevo = factoryNotificacion.crearSegunReserva(reservaNueva, reservaId);

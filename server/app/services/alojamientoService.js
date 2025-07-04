@@ -120,12 +120,28 @@ export class AlojamientoService {
       errores.push("El filtro 'limit' debe ser un número mayor que 0.");
     }
 
+    if (estaDefinido(filters.fechaDesde) && isNaN(Date.parse(filters.fechaDesde))) {
+      errores.push("El filtro 'fechaDesde' debe tener un formato de fecha válido.");
+    }
+    if (estaDefinido(filters.fechaHasta) && isNaN(Date.parse(filters.fechaHasta))) {
+      errores.push("El filtro 'fechaHasta' debe tener un formato de fecha válido.");
+    }
+
     if (errores.length > 0) {
       throw new ValidationErrors("Errores en los filtros", errores);
     }
   }
 
+  async findIdsByAnfitrion(anfitrionId) {
 
+      const alojamientos = await this.alojamientoRepository.findIdsByAnfitrion(anfitrionId);
+
+
+      const alojamientoIds = alojamientos.map(a => a._id.toString());
+
+
+      return alojamientoIds;
+  }
 
   async validarAlojamiento(alojamiento) {
     if (!alojamiento) throw new ValidationError("El objeto alojamiento es requerido.");
@@ -293,3 +309,4 @@ export class AlojamientoService {
 function estaDefinido(valor) {
   return valor !== undefined && valor !== null && valor !== '';
 }
+

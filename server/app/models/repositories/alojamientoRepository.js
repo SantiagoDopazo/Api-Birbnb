@@ -1,8 +1,10 @@
 import { AlojamientoModel } from '../schemas/alojamientoSchema.js';
+import { ReservaModel } from '../schemas/reservaSchema.js';
 
 export class AlojamientoRepository {
     constructor() {
         this.model = AlojamientoModel;
+        this.reservaModel = ReservaModel;
     }
 
     async findAll(filters = {}, skip = 0, limit = 10) {
@@ -42,6 +44,23 @@ export class AlojamientoRepository {
       query['direccion.long'] = Number(filters.long);
     }
 
+    if (filters.fechaDesde && filters.fechaHasta) {
+      const fechaDesde = new Date(filters.fechaDesde);
+      const fechaHasta = new Date(filters.fechaHasta);
+
+      const reservasSolapadas = await this.reservaModel.find({
+        'rangoFechas.desde': { $lt: fechaHasta },
+        'rangoFechas.hasta': { $gt: fechaDesde },
+        estadoReserva: { $ne: 'CANCELADA' } 
+      }).select('alojamiento');
+
+      const idsOcupados = reservasSolapadas.map(r => r.alojamiento.toString());
+
+      if (idsOcupados.length > 0) {
+        query._id = { $nin: idsOcupados };
+      }
+    }
+
     const total = await this.model.countDocuments(query);
     const results = await this.model.find(query).skip(skip).limit(limit);
 
@@ -54,6 +73,10 @@ export class AlojamientoRepository {
   
     async findByName(nombre) {
         return await this.model.findOne({ nombre });
+    }
+
+    async findIdsByAnfitrion(anfitrionId) {
+      return await this.model.find({ anfitrion: anfitrionId }).select('_id');
     }
   
     async save(alojamiento) {

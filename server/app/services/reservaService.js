@@ -1,5 +1,8 @@
 import { Reserva } from "../models/entities/Reserva.js";
+import { RangoFechas } from "../models/entities/RangoFechas.js";
 import { NotFoundError, ValidationError, ConflictError } from "../errors/AppError.js";
+import { eventManager } from "../events/EventManager.js";
+import { RESERVA_EVENTS } from "../events/ReservaEvents.js";
 
 export class ReservaService {
     constructor(reservaRepository, usuarioService, alojamientoService) {
@@ -63,16 +66,93 @@ export class ReservaService {
         await this._validarAlojamientoExiste(alojamiento);
     }
 
+    async _validarDisponibilidadAlojamiento(alojamientoId, rangoFechas) {
+        const reservasExistentes = await this.reservaRepository.model.find({
+            alojamiento: alojamientoId,
+            estadoReserva: { $in: ['PENDIENTE', 'CONFIRMADA'] }
+        });
+
+        const nuevoRango = new RangoFechas(
+            new Date(rangoFechas.desde),
+            new Date(rangoFechas.hasta)
+        );
+
+        for (const reservaExistente of reservasExistentes) {
+            const rangoExistente = new RangoFechas(
+                new Date(reservaExistente.rangoFechas.desde),
+                new Date(reservaExistente.rangoFechas.hasta)
+            );
+
+            if (nuevoRango.seSuperponeCon(rangoExistente)) {
+                const fechaInicioStr = rangoExistente.fechaInicio.toISOString().split('T')[0];
+                const fechaFinStr = rangoExistente.fechaFin.toISOString().split('T')[0];
+                
+                throw new ConflictError(
+                    `El alojamiento no está disponible en las fechas seleccionadas. ` +
+                    `Conflicto con reserva existente del ${fechaInicioStr} al ${fechaFinStr}.`
+                );
+                         }
+         }
+     }
+
+     async _validarDisponibilidadAlojamientoExcluyendo(alojamientoId, rangoFechas, reservaIdExcluir) {
+         const reservasExistentes = await this.reservaRepository.model.find({
+             _id: { $ne: reservaIdExcluir },
+             alojamiento: alojamientoId,
+             estadoReserva: { $in: ['PENDIENTE', 'CONFIRMADA'] }
+         });
+
+         const nuevoRango = new RangoFechas(
+             new Date(rangoFechas.desde),
+             new Date(rangoFechas.hasta)
+         );
+
+         for (const reservaExistente of reservasExistentes) {
+             const rangoExistente = new RangoFechas(
+                 new Date(reservaExistente.rangoFechas.desde),
+                 new Date(reservaExistente.rangoFechas.hasta)
+             );
+
+             if (nuevoRango.seSuperponeCon(rangoExistente)) {
+                 const fechaInicioStr = rangoExistente.fechaInicio.toISOString().split('T')[0];
+                 const fechaFinStr = rangoExistente.fechaFin.toISOString().split('T')[0];
+                 
+                 throw new ConflictError(
+                     `El alojamiento no está disponible en las nuevas fechas seleccionadas. ` +
+                     `Conflicto con reserva existente del ${fechaInicioStr} al ${fechaFinStr}.`
+                 );
+             }
+         }
+     }
+
     //SERVICES
 
     async findAllByUsuario(usuarioId) {
-        await this._validarUsuarioExiste(reserva.huespedReservador);
+        await this._validarUsuarioExiste(usuarioId);
         const reservas = await this.reservaRepository.findAllByUsuario(usuarioId);
         return reservas.map(this.toDTO);
     }
 
+    async findAllByAnfitrion(anfitrionId) {
+        const alojamientoIds = await this.alojamientoService.findIdsByAnfitrion(anfitrionId);
+
+        if (alojamientoIds.length === 0) {
+            return [];
+        }
+
+        const reservas = await this.reservaRepository.findByAlojamientoIds(alojamientoIds);
+
+        if (!Array.isArray(reservas)) {
+            return [];
+        }
+
+        return reservas.map(reserva => this.toDTO(reserva));
+    }
+
     async create(reserva) {
         await this._validarReserva(reserva);
+        
+        await this._validarDisponibilidadAlojamiento(reserva.alojamiento, reserva.rangoFechas);
 
         const nuevaReserva = new Reserva(
             reserva.huespedReservador,
@@ -84,12 +164,11 @@ export class ReservaService {
         );
 
         const reservaGuardada = await this.reservaRepository.save(nuevaReserva);
-        const alojamientoCompleto = await this.alojamientoService.findById(reservaGuardada.alojamiento);
 
-        /* await this.notificacionService.create({
-            usuario: alojamientoCompleto.anfitrion.toString(),
-            reserva: reservaGuardada._id.toString()
-        }); */
+        await eventManager.emit(RESERVA_EVENTS.RESERVA_CREADA, {
+            reserva: reservaGuardada,
+            alojamientoId: reservaGuardada.alojamiento
+        });
 
         return this.toDTO(reservaGuardada);
     }
@@ -107,21 +186,31 @@ export class ReservaService {
             throw new ConflictError("No se puede modificar una reserva en curso o finalizada.");
         }
 
+        const fechasCambiaron = 
+            reservaExistente.rangoFechas.desde !== reserva.rangoFechas.desde ||
+            reservaExistente.rangoFechas.hasta !== reserva.rangoFechas.hasta;
+        const alojamientoCambio = reservaExistente.alojamiento.toString() !== reserva.alojamiento.toString();
+        
+        if (fechasCambiaron || alojamientoCambio) {
+            await this._validarDisponibilidadAlojamientoExcluyendo(
+                reserva.alojamiento, 
+                reserva.rangoFechas, 
+                id
+            );
+        }
         
         const reservaActualizada = await this.reservaRepository.update(id, reserva);
 
         if (reservaActualizada && reservaExistente) {
             if (reservaActualizada.estadoReserva === 'CONFIRMADA' && reservaExistente.estadoReserva !== 'CONFIRMADA') {
-                await this.notificacionService.create({
-                    usuario: reservaActualizada.huespedReservador.id.toString(),
-                    reserva: reservaActualizada._id.toString()
+                await eventManager.emit(RESERVA_EVENTS.RESERVA_CONFIRMADA, {
+                    reserva: reservaActualizada
                 });
             }
-
             else if (reservaActualizada.estadoReserva === 'CANCELADA' && reservaExistente.estadoReserva !== 'CANCELADA') {
-                await this.notificacionService.create({
-                    usuario: reservaActualizada.alojamiento.anfitrion.id.toString(),
-                    reserva: reservaActualizada._id.toString()
+                await eventManager.emit(RESERVA_EVENTS.RESERVA_CANCELADA, {
+                    reserva: reservaActualizada,
+                    alojamientoId: reservaActualizada.alojamiento
                 });
             }
         }
@@ -154,7 +243,7 @@ export class ReservaService {
             rangoFechas: reserva.rangoFechas,
             precioPorNoche: reserva.precioPorNoche,
             motivoCancelacion: reserva.motivoCancelacion,
-            estadoReserva: reserva.estado
+            estadoReserva: reserva.estadoReserva
         };
     }
 }

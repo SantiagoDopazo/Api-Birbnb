@@ -16,4 +16,9 @@ export function registerUsuarioRoutes(app, getController) {
     app.delete("/usuarios/:id", (req, res, next) =>
         getController(UsuarioController).delete(req, res, next)
     );
+
+    app.post('/login', (req, res, next) =>
+        getController(UsuarioController).login(req, res, next)
+    );
+
 } 
