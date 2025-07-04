@@ -1,7 +1,7 @@
 const request = require('supertest');
 const express = require('express');
 const bodyParser = require('body-parser');
-const NotificacionController = require('../controllers/NotificacionController');
+import { NotificacionController } from '../app/controllers/NotificacionController.js';
 
 // Mock del servicio
 const mockService = {
