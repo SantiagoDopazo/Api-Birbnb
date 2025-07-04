@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Row, Col, Button, message, Typography, Tag } from 'antd';
+import { Card, Row, Col, Button, message, Typography, Tag, Divider } from 'antd';
 import {
   getReservasDeAnfitrion,
   getAlojamientoPorId,
   getUsuarioPorId,
   confirmarReserva
 } from '../../lib/api';
-import { CheckOutlined } from '@ant-design/icons';
+import { CheckOutlined, HomeOutlined } from '@ant-design/icons';
 
 const { Title, Paragraph } = Typography;
 
@@ -92,7 +92,13 @@ const MisAlojamientosPage = () => {
 
   return (
     <div style={{ padding: '2rem' }}>
-      <Title level={2}>Mis Alojamientos - Reservas</Title>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
+        <HomeOutlined style={{ marginRight: '8px', fontSize: '24px' }} />
+        <Title level={2} style={{ margin: 0 }}>Mis Alojamientos - Reservas</Title>
+      </div>
+      
+      <Divider />
+
       {loading ? (
         <p>Cargando reservas...</p>
       ) : reservas.length === 0 ? (
@@ -123,6 +129,14 @@ const MisAlojamientosPage = () => {
                 <Paragraph>
                   <strong>Huésped: </strong>
                   {reserva.nombreHuesped}
+                </Paragraph>
+                <Paragraph>
+                  <strong>Huéspedes: </strong>
+                  {reserva.cantHuespedes}
+                </Paragraph>
+                <Paragraph>
+                  <strong>Precio por noche: </strong>
+                  ${reserva.precioPorNoche}
                 </Paragraph>
                 <Paragraph>
                   <Tag color={getTagColor(reserva.estadoReserva)}>{reserva.estadoReserva}</Tag>
