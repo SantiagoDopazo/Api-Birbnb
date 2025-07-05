@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://two025-1c-lu-sa-grupo-06-1.onrender.com';
 
 // ===== ALOJAMIENTOS =====
 export const getAlojamientos = (params) => {
