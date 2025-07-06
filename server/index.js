@@ -31,10 +31,26 @@ import { NotificacionListener } from "./app/listeners/NotificacionListener.js";
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors({
-  origin: 'http://localhost:3000'
-}));
+const allowedOrigins = [
+  'http://localhost:3001', // para desarrollo local
+  'https://resilient-gnome-663df0.netlify.app' // frontend desplegado
+];
 
+// app.use(cors({
+//   origin: 'http://localhost:3000',
+// }));
+
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true); // permite requests sin origen (ej. Postman)
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true // si usás cookies o autenticación con credenciales
+}));
 
 const server = new Server(app, port);
 
