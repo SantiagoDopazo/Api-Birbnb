@@ -278,10 +278,10 @@ git commit -m "test: agregar/modificar tests"
 
 | Nombre | Rol | GitHub |
 |--------|-----|--------|
-| **Nicolás López Belsué** | Full Stack Developer | [@nicolas-lopez] |
-| **Axel Marco Caputo** | Full Stack Developer | [@axel-caputo] |
-| **Kalil Alejandro Vásques Movia** | Full Stack Developer | [@kalil-vasques] |
-| **Santiago Dopazo** | Full Stack Developer | [@santiago-dopazo] |
+| **Nicolás López Belsué** | Full Stack Developer | [nlopezbelsue] |
+| **Axel Marco Caputo** | Full Stack Developer | [axcaputo] |
+| **Kalil Alejandro Vásques Movia** | Full Stack Developer | [KVasquesMoviaUTN] |
+| **Santiago Dopazo** | Full Stack Developer | [SantiagoDopazo] |
 
 **Universidad Tecnológica Nacional - Facultad Regional Buenos Aires**  
 **Diseño de Sistemas - 1C 2025** 
